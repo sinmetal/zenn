@@ -140,7 +140,7 @@ App Engine Image Service など Web Application を作る上で便利で安価�
 ここまで読んだ読者の中には、Serverless には [Cloud Functions](https://cloud.google.com/functions) もあるけど・・・？と思っている方もいるでしょう。
 現状、僕はあまりCloud Functionsを使うことがありません。
 まず、Cloud Functions は Web Application を作るのには適しません。
-1 Instance 1 Function なので 10 API 作ろうと 10 Function Deployすることになり、共通処理の UPDATE を考えると地獄のような状態になります・・・。
+1 Instance 1 Function なので 10 API 作ろうと 10 Function Deployすることになり、アクセス権の制御など下回りの共通処理の UPDATE を考えると Deploy 祭りになってしまうのもつらいところです。
 1 Instance で同時に処理する Request は 1 なのも大人数が同時に利用し、1画面開くと同じユーザから複数 Request が実行される Web Application 向きではありません。
 
 そのため、Cloud Functions に向いてるのはユーザからの Request より、独立したイベント処理です。
@@ -153,7 +153,7 @@ Cloud Run に簡単に乗せられるので、Cloud Run に寄せておきたい
 
 ## Cloud Functions にしかできないこと
 
-Cloud Functions を選択するケースとして、Cloud Functions にしかない Event Trigger を使うケースがあります。
+Cloud Functions を選択するケースとして、Cloud Functions にしかない [Event Trigger](https://cloud.google.com/functions/docs/calling) を使うケースがあります。
 
 * Cloud Firestore Trigger
 * Google Analytics for Firebase Triggers
