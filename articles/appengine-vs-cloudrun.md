@@ -134,3 +134,32 @@ App Engine 自体が Google Cloud Platform より昔から存在していたこ�
 
 ちょうど、今日 [今年の振り返りと今後追加する機能の予定](https://cloud.google.com/blog/products/serverless/looking-back-on-cloud-runs-first-year-since-ga) が Blog に書かれ、その中には双方向ストリーミングや WebSocket もあり、これらも App Engine に要望はあったけど、実現されなかったものです。
 App Engine Image Service など Web Application を作る上で便利で安価なサービスが詰まっていた Platform としての App Engine は失われていくけど、時代に合わせて進化していくGCPが来年も楽しみです。
+
+# Cloud Functions は？
+
+ここまで読んだ読者の中には、Serverless には [Cloud Functions](https://cloud.google.com/functions) もあるけど・・・？と思っている方もいるでしょう。
+現状、僕はあまりCloud Functionsを使うことがありません。
+まず、Cloud Functions は Web Application を作るのには適しません。
+1 Instance 1 Function なので 10 API 作ろうと 10 Function Deployすることになり、共通処理の UPDATE を考えると地獄のような状態になります・・・。
+1 Instance で同時に処理する Request は 1 なのも大人数が同時に利用し、1画面開くと同じユーザから複数 Request が実行される Web Application 向きではありません。
+
+そのため、Cloud Functions に向いてるのはユーザからの Request より、独立したイベント処理です。
+例えば、画像が新しくアップロードされたイベントから、サムネイルを作るとか、cron で 30秒毎にキャッシュを作っておくなどの処理です。
+ただ、これらの処理は App Engine や Cloud Run を使ってもできる処理なので、あまり Cloud Functions に分けておこうというモチベーションはありません。
+
+更に僕の場合、Go がメインですが、Go だと Dockerfile 書くのも簡単だし、main 関数で Web Server を立ち上げるのも簡単です。
+Cloud Run に簡単に乗せられるので、Cloud Run に寄せておきたい気持ちになります。
+そんな感じで、僕の場合は Cloud Functions を使う理由がないので、今のところほとんど使っていません。
+
+## Cloud Functions にしかできないこと
+
+Cloud Functions を選択するケースとして、Cloud Functions にしかない Event Trigger を使うケースがあります。
+
+* Cloud Firestore Trigger
+* Google Analytics for Firebase Triggers
+* Firebase Realtime Database Triggers
+* Firebase Authentication Triggers
+* Firebase Remote Config Triggers
+
+これらの Trigger は Cloud Functions にしかないので、選択肢がありません。
+ただ、 [Event Trigger も Cloud Run が追いかけてる](https://cloud.google.com/blog/products/serverless/build-event-driven-applications-in-cloud-run) ので、Cloud Run 側の対応が進めば、好きな方を選べるようになりそうです。
