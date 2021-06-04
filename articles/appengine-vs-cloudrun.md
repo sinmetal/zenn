@@ -86,7 +86,6 @@ App Engine には Static Contents Server があるので、html, js などを配
 1 Request を処理する Deadline が [App Engine](https://cloud.google.com/appengine/docs/standard/go/how-instances-are-managed?hl=en#scaling_types) と [Cloud Run](https://cloud.google.com/run/docs/configuring/request-timeout?hl=en) で違う点がある。
 気になるのは Cloud Tasks, Cloud Scheduler から Cloud Run を起動した時の Deadline が 30min になること。
 現実的には 1 task に 30min かけることは少ないので、そんなに気にならないかもしれないが、Cloud Run 自体の Deadline が 60min なので、合わせて欲しい気持ちになる。
-まだ Cloud Run の 15min 以上の Deadline は Preview なので、GA になったら、伸びてくれるという淡い期待を抱いている。
 
 #### HTTP Request Deadline
 
