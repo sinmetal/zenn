@@ -49,7 +49,7 @@ App Engine は規定されたいくつかの種類から選択するが、Cloud 
 #### Cloud Run
 
 * CPU 1 ~ 4 Core
-* Memory 128 MiB ~ 4 GiB
+* Memory 128 MiB ~ 8 GiB
 
 ### Deploy
 
