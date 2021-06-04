@@ -73,7 +73,8 @@ Cloud Run だと コマンドラインツール で提供されているもの�
 
 ### 認証
 
-Cloud Run は [Identity Aware Proxy](https://cloud.google.com/iap) が今は使えないので、Google Account や Google Domain、Google Group でさらっと認証したい場合は、ちょっとめんどう。
+[Identity Aware Proxy](https://cloud.google.com/iap) を使う場合、Cloud Runは [Serverless NEG](https://cloud.google.com/load-balancing/docs/negs/serverless-neg-concepts?hl=en) が必要となるため、完全無料ではできない。
+完全無料を目指していない場合は、App EngineとCloud Runでどちらを選択するに影響するような差はない。
 
 ### Static Contents
 
@@ -120,7 +121,7 @@ Path ごとに向き先を設定できるので、 `/api/*` は App Engine `/ima
 
 更に External HTTP(S) Load Balancing が前にいれば、 [Cloud Armor](https://cloud.google.com/armor) が使えたり、Tokyo Region の [App Engine, Cloud Run に Custom Domain を割り当てた時に遅くなる問題](https://cloud.google.com/appengine/docs/standard/go/mapping-custom-domains?hl=en) が解決されるなど良いことが多い。
 
-ただ、Severless NEG はまだ出たばかりで [制限事項](https://cloud.google.com/load-balancing/docs/negs/serverless-neg-concepts?hl=en#limitations) がそれなりにある。
+ただ、Severless NEG はApp EngineやCloud Runをそのまま使うのに比べて [制限事項](https://cloud.google.com/load-balancing/docs/negs/serverless-neg-concepts?hl=en#limitations) がそれなりにある。
 Deadline が 30sec 固定は地味に気になるが、User からの Request で、30sec 以上かけることはあんまりないから、なんとかなるだろう。
 この制限があるので、Cloud Tasks, Cloud Scheduler からの Request は Serverless NEG 経由ではなく、直接送った方がいいかもしれない。
 Cloud Armor を ON にしている時に Cloud Tasks, Cloud Scheduler の Request をかける必要はないし、External HTTP(S) Load Balancing の料金の節約にもなる。
@@ -132,7 +133,7 @@ Cloud Run を見ていると、App Engine が一度目指した世界を今の�
 App Engine 自体が Google Cloud Platform より昔から存在していたこともあり、GCPに馴染んでいない点もちょいちょいあるわけですが、Cloud Run は今の GCP でもう一度 Serverless を作るなら、こうするぞ！という王道を爆走してる感じがあります。
 課金体系も App Engine がまだベータだった時のものに近い リソース利用時間での課金となり、あの日の夢をもう一度見させてくれそうです。
 
-ちょうど、今日 [今年の振り返りと今後追加する機能の予定](https://cloud.google.com/blog/products/serverless/looking-back-on-cloud-runs-first-year-since-ga) が Blog に書かれ、その中には双方向ストリーミングや WebSocket もあり、これらも App Engine に要望はあったけど、実現されなかったものです。
+Cloud Runに実装された双方向ストリーミングや WebSocketは、App Engineに要望はあったけど、実現されなかったものです。
 App Engine Image Service など Web Application を作る上で便利で安価なサービスが詰まっていた Platform としての App Engine は失われていくけど、時代に合わせて進化していくGCPが来年も楽しみです。
 
 # Cloud Functions は？
