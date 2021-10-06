@@ -106,9 +106,11 @@ Cloud Run 自体の Deadline は 60min だが、Cloud Run に Request を送る�
 
 # Cloud Run で悩ましいところ
 
-全体を見ると、Cloud Run がとても魅力的ではあるが、Cloud Run は Request を処理していない間、CPU割当がなくなり、しばらくした後、その Instance を使い回すという点が、少し引っかかっている。
+~~全体を見ると、Cloud Run がとても魅力的ではあるが、Cloud Run は Request を処理していない間、CPU割当がなくなり、しばらくした後、その Instance を使い回すという点が、少し引っかかっている。
 この挙動は Cloud Run 特有で、Local や Unit Test でチェックするのが難しいので、問題を発見するのが難しそうだと感じる。
-gRPC のコネクションの管理や使っている Library が裏で何かしていないかを気にしておかないと、思いも寄らないタイミングで膝に矢を受けてしまいそうだ。
+gRPC のコネクションの管理や使っている Library が裏で何かしていないかを気にしておかないと、思いも寄らないタイミングで膝に矢を受けてしまいそうだ。~~
+
+[Always CPU](https://cloud.google.com/run/docs/configuring/cpu-allocation?hl=en) の機能が増えたので、この部分がつらいなら、Always CPUにすれば解決するようになった。
 
 # App Engine と Cloud Run を Mix するために
 
