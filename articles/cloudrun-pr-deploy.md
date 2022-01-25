@@ -25,12 +25,12 @@ Cloud Runには [Revision Tagを利用して、任意のRevisionにRequestを送
 対象はIAPをかけているStaticなWeb SiteでPull Requestの時に実際に動いている画面が見たいというのが今回の要望。
 環境を作って振り分けれそうなレイヤーとして [URL maps](https://cloud.google.com/load-balancing/docs/url-map) がある。
 URL mapsではpathかhostでBackend Serviceが切り替えられる。
-今回のケースではpathを変えてしまうとWeb Siteがうまく動かなくなることがあると思ったので、hostを変えることにした。
-hostを変えると新たな課題として、SSL証明書をどうするか？が出てきた。
+今回のケースではpathを変えてしまうとWeb Siteがうまく動かなくなる可能性があるので、hostを変えることにした。
+hostを変えると新たな課題として、SSL証明書の管理が出てきた。
 ワイルドカード証明書が使えればよいが [Google Managed SSL 証明書](https://cloud.google.com/kubernetes-engine/docs/how-to/managed-certs) はワイルドカード証明書に対応していない。
-Google Managed SSL 証明書をPRごとに都度作るとProvisioningに時間がかかってしまう。
-そのため、PRごとに新たな環境を作るのではなく、事前にいくつかの環境を作っておき、割り当てていく方式にした。
-Target Proxyに設定できるSSL Certの数は15までという制限があるが、同時に開かれるPull Requestは5つ以下だろうということで、この方式を採用した。
+Google Managed SSL 証明書をPull Requestごとに作るとProvisioningに時間がかかってしまう。
+そのため、Pull Requestごとに新たな環境を作るのではなく、事前にいくつかの環境を作っておき、指定した環境にDeployすることにした。
+この場合、Target Proxyに設定できるSSL Certの数は15までという制限があるが、同時に開かれているPull Requestは3つ程度ということなので、許容した。
 
 ## 事前に環境ごとに用意しておくもの
 
@@ -38,7 +38,7 @@ Target Proxyに設定できるSSL Certの数は15までという制限がある�
 * Serverless NEG ([Cloud Revision Tagを指定しておく](https://cloud.google.com/sdk/gcloud/reference/compute/network-endpoint-groups/create#--cloud-run-tag))
 * Backend Service
 
-alpha, beta...のように環境を用意しておく場合、上記の3つのリソースを作りURL Mapsのhostで切り替えるようにする。
+alpha, beta...のように環境を用意して、上記の3つのリソースを作りURL Mapsのhostで切り替えるようにする。
 `https://alpha-hoge.example.com` がRequestされたら、alpha用のBackend Serviceに割り振り、alpha tagが付いているCloud Run RevisionがResponseを返すようにする。
 これを必要な環境の数だけ用意しておく。
 
@@ -48,7 +48,7 @@ alpha, beta...のように環境を用意しておく場合、上記の3つの�
 `/deploy alpha` とコメントするとalpha環境にDeployする。
 コメントをトリガーして動かすのは [GitHub Actions](https://github.co.jp/features/actions) が簡単だろうと思い、GitHub Actionsで作った。
 BuildやTestはBranch Pushで動いた方が便利だろうと思い、Cloud BuildでBuildとTest, GitHub ActionでDeployするという2つの段階に分けた。
-BuildとTestをCloud Buildで行っている理由は、筆者が慣れているからと [Binary Authorization](https://cloud.google.com/binary-authorization) するなら、Cloud Buildを使うことになると思った程度なので、すべてGitHub Actionにしてもよい。
+Cloud Buildを使っている理由は、筆者が慣れているからと [Binary Authorization](https://cloud.google.com/binary-authorization) するなら、Cloud Buildを使うことになると思った程度なので、すべてGitHub Actionにしてもよい。
 
 ![](/images/cloudrun-pr-deploy/cicd.jpg)
 
