@@ -3,13 +3,13 @@ title: "Cloud Run with IAP / 任意の環境のURLを作る"
 emoji: "🦁"
 type: "tech" # tech: 技術記事 / idea: アイデア
 topics: ["CloudRun","GoogleCloudPlatform"]
-published: false
+published: true
 ---
 
 Cloud Run with IAPを利用しているアプリを開発中にPull Requesのレビューをする時、専用の環境で動作確認したいと言われたので、考えてみた。
 Cloud Runには [Revision Tagを利用して、任意のRevisionにRequestを送る独自URLを発行する機能](https://cloud.google.com/run/docs/rollouts-rollbacks-traffic-migration#tags) があるが、IAP([Identity Aware Proxy](https://cloud.google.com/iap))を利用している場合、Serverless NEGを利用して、HTTP LBからRequestを受けるため、この機能を使っただけでは解決しない。
 
-# 最終的な構成
+# 最終的なCloud Runの構成
 
 ![](/images/cloudrun-pr-deploy/gcp.jpg)
 
