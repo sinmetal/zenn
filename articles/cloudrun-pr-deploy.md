@@ -30,11 +30,12 @@ hostを変えると新たな課題として、SSL証明書の管理が出てき�
 ワイルドカード証明書が使えればよいが [Google Managed SSL 証明書](https://cloud.google.com/kubernetes-engine/docs/how-to/managed-certs) はワイルドカード証明書に対応していない。
 Google Managed SSL 証明書をPull Requestごとに作るとProvisioningに時間がかかってしまう。
 そのため、Pull Requestごとに新たな環境を作るのではなく、事前にいくつかの環境を作っておき、指定した環境にDeployすることにした。
-この場合、Target Proxyに設定できるSSL Certの数は15までという制限があるが、同時に開かれているPull Requestは3つ程度ということなので、許容した。
+[1つのSSL証明書で100のドメインを設定できる](https://cloud.google.com/load-balancing/docs/quotas#ssl_certificates) のでそれなりの数の環境を作ることができる。
+ただ、SSL証明書にドメインを追加, 削除した時はProvisioning Statusとなり、SSL証明書自体がしばらく使えなくなるので、注意が必要だ。
+Target Proxyには15個までSSL証明書リソースを設定できるので、最大1500環境を作ることができる。
 
 ## 事前に環境ごとに用意しておくもの
 
-* Google Managed Cert
 * Serverless NEG ([Cloud Revision Tagを指定しておく](https://cloud.google.com/sdk/gcloud/reference/compute/network-endpoint-groups/create#--cloud-run-tag))
 * Backend Service
 
