@@ -2,7 +2,7 @@
 title: "GitHub ActionsでFirebase Deployを行う"
 emoji: "🦁"
 type: "tech" # tech: 技術記事 / idea: アイデア
-topics: ["Firebase","GoogleCloudPlatform","GitHub Actions"]
+topics: ["firebase","gcp","githubactions"]
 published: false
 ---
 
@@ -15,7 +15,12 @@ Firebase CLIで大昔はService Accountが使えなかったので、 `firebase 
 * 発行している `FIREBASE_TOKEN` が分からないので、Rotateが難しい
 
 ということで、今は [Service Accountを使ってfirebaseコマンドを実行](https://github.com/firebase/firebase-tools#using-with-ci-systems) するようになりました。
-Cloud Buildsでは公式ドキュメントに [Exampleがある](https://cloud.google.com/build/docs/deploying-builds/deploy-firebase) のですが、GitHub Actionsはないので、Exampleを書いてみました。
+Cloud Buildsでは公式ドキュメントに [Exampleがあります](https://cloud.google.com/build/docs/deploying-builds/deploy-firebase) 
+Cloud BuildsだとService Accountが元々あるので、Firebaseの権限さえService Accountに持たせれば、やることはありませんね。
+
+GitHub Actionsの場合は、Service Accountを使うための設定が必要になります。
+設定は [GitHub Actions + google-github-actions/auth で GCP keyless CI/CD](https://zenn.dev/vvakame/articles/gha-and-gcp-workload-identity) の通りにすればできます。
+Service Accountでの認証ができれば、Firebase CLIを実行するだけなので、npmでinstallして実行しています。
 
 ``` deploy.yaml
 name: Deploy
@@ -59,9 +64,4 @@ jobs:
       - run: firebase deploy --project=${{ vars.GOOGLE_CLOUD_PROJECT_ID }} --only=hosting
 ```
 
-[実際にやっているRepository](https://github.com/sinmetal/firebase-deploy)
-
-実際、やっていることはGitHub ActionsでGoogle Cloud SDKを使う方法と同じです。
-Google Cloud側の設定は [GitHub Actions + google-github-actions/auth で GCP keyless CI/CD](https://zenn.dev/vvakame/articles/gha-and-gcp-workload-identity) の通りにしています。
-作成したService AccountにFirebase AdminのRoleを割り当てているぐらいです。
-この方法でやれば、keyのRotateを考える必要がありません。
+[Example Repository](https://github.com/sinmetal/firebase-deploy)
