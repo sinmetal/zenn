@@ -2,7 +2,7 @@
 title: "Cloud Run with IAP / 任意の環境のURLを作る"
 emoji: "🦁"
 type: "tech" # tech: 技術記事 / idea: アイデア
-topics: ["CloudRun","GoogleCloudPlatform"]
+topics: ["CloudRun","gcp"]
 published: true
 ---
 
