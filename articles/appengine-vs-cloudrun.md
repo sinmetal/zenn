@@ -2,7 +2,7 @@
 title: "Google App Engine VS Cloud Run"
 emoji: "🦁"
 type: "tech" # tech: 技術記事 / idea: アイデア
-topics: ["GoogleAppEngine","CloudRun","GoogleCloudPlatform"]
+topics: ["GoogleAppEngine","CloudRun","gcp"]
 published: true
 ---
 
