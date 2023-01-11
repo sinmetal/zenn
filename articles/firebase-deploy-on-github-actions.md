@@ -3,7 +3,7 @@ title: "GitHub ActionsでFirebase Deployを行う"
 emoji: "🦁"
 type: "tech" # tech: 技術記事 / idea: アイデア
 topics: ["firebase","gcp","githubactions"]
-published: false
+published: true
 ---
 
 GitHub ActionsでFirebase Deployを行う時のサンプルです。
