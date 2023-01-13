@@ -43,23 +43,20 @@ jobs:
       - uses: actions/checkout@v3
         with:
           submodules: true
-      - uses: google-github-actions/setup-gcloud@v1
-        with:
-          version: ${{ env.GCLOUD_VERSION }}
-      - id: auth_google_cloud
-        name: Authenticate to Google Cloud
+      - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v1.0.0
         with:
           workload_identity_provider: projects/${{ vars.GOOGLE_CLOUD_PROJECT_NUMBER }}/locations/global/workloadIdentityPools/github-actions/providers/gha-provider
           service_account: github-actions@${{ vars.GOOGLE_CLOUD_PROJECT_ID }}.iam.gserviceaccount.com
           access_token_lifetime: 1200s
           create_credentials_file: true
+      - uses: google-github-actions/setup-gcloud@v1
+        with:
+          version: ${{ env.GCLOUD_VERSION }}
       - name: Setup Node.js
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ env.NODE_VERSION }}
-        env:
-          GOOGLE_APPLICATION_CREDENTIALS: "${{ steps.auth_google_cloud.outputs.credentials_file_path }}"
       - run: npm install -g firebase-tools
       - run: firebase deploy --project=${{ vars.GOOGLE_CLOUD_PROJECT_ID }} --only=hosting
 ```
