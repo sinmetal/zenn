@@ -41,8 +41,6 @@ jobs:
       NODE_VERSION: 18
     steps:
       - uses: actions/checkout@v3
-        with:
-          submodules: true
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v1.0.0
         with:
