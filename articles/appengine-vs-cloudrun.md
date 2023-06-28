@@ -10,8 +10,8 @@ published: true
 
 # 結論
 
-正直、僕もよく分からない。
-現状、僕はどちらにも好きなところと嫌いなところがあって、使い分けている。
+僕はどちらにも好きなところと嫌いなところがあって、使い分けているが、だいたい Cloud Runを使っている。
+Google App Engineを使うのは、Landing Pageのようなあまり複雑なことをしないケース。
 
 この先は2つを比べて、僕がどちらを使うのかを判断する時の材料を書いていく。
 Google App Engine(以下App Engine) には Standard と Flex があるが、この記事では Standard を主に扱っている。
@@ -21,7 +21,7 @@ Cloud Run には fully managed と for Anthos があるが、この記事では 
 
 ### 課金体系
 
-App Engine は Instance 課金、Cloud Run は 使用したリソースでの課金になる。
+App Engine は Instance 課金、Cloud Run は 使用したリソースでの課金になる。
 App Engine(automatic scaling, basic scaling) は Instance が起動してから、最後のリクエストの15分後に終了するまでを単位にしている。
 Cloud Run は 100ms 単位で切り上げで計算される。
 そのため、1min毎に5sec処理するみたいなことをした時に、App Engine は Instance が終了しないので、ずっと課金対象だが、Cloud Run は都度 5000ms 課金されるだけで済む。
@@ -48,8 +48,8 @@ App Engine は規定されたいくつかの種類から選択するが、Cloud 
 
 #### Cloud Run
 
-* CPU 1 ~ 4 Core
-* Memory 128 MiB ~ 8 GiB
+* CPU 0.08 ~ 8 Core (2nd gen は最小 0.5~)
+* Memory 128 MiB ~ 32 GiB (2nd gen は最小 512MiB~)
 
 ### Deploy
 
@@ -74,7 +74,7 @@ Cloud Run だと コマンドラインツール で提供されているもの�
 ### 認証
 
 [Identity Aware Proxy](https://cloud.google.com/iap) を使う場合、Cloud Runは [Serverless NEG](https://cloud.google.com/load-balancing/docs/negs/serverless-neg-concepts?hl=en) が必要となるため、完全無料ではできない。
-完全無料を目指していない場合は、App EngineとCloud Runでどちらを選択するに影響するような差はない。
+完全無料を目指していない場合は、App EngineとCloud Runでどちらを選択するかに影響するような差はない。
 
 ### Static Contents
 
@@ -83,11 +83,13 @@ App Engine には Static Contents Server があるので、html, js などを配
 
 ### Deadline
 
-1 Request を処理する Deadline が [App Engine](https://cloud.google.com/appengine/docs/standard/go/how-instances-are-managed?hl=en#scaling_types) と [Cloud Run](https://cloud.google.com/run/docs/configuring/request-timeout?hl=en) で違う点がある。
-気になるのは Cloud Tasks, Cloud Scheduler から Cloud Run を起動した時の Deadline が 30min になること。
-現実的には 1 task に 30min かけることは少ないので、そんなに気にならないかもしれないが、Cloud Run 自体の Deadline が 60min なので、合わせて欲しい気持ちになる。
+App Engine, Cloud Runでそれなりに差があるが、結構長い。
+Serverlessだと、長時間の処理は分割した方が良いので、どちらを使うか？という観点ではあまり気にならないかもしれない。
 
 #### HTTP Request Deadline
+
+シンプルにHTTP Requestを受け取った時の伸ばすことのできる最長のDeadline。
+App EngineはScaling Configによって変わる。
 
 * App Engine Automatic Scaling : 10min
 * App Engine Basic Scaling and Manual Scaling : 24h
@@ -95,26 +97,28 @@ App Engine には Static Contents Server があるので、html, js などを配
 
 #### Cloud Tasks, Cloud Scheduler
 
+App Engine Target Task だと 送信先がBasic Scaling or Manual Scaling なら timeoutは 24h
 Cloud Run 自体の Deadline は 60min だが、Cloud Run に Request を送るために使う HTTP Target Task が 30min までなので、こっちに引っ張られてしまう。
 
 * App Engine HTTP Task to Basic Scaling and Manual Scaling : 24h
 * [HTTP Target Task](https://cloud.google.com/tasks/docs/creating-http-target-tasks?hl=en#handler) : 30min
 
+#### [HTTP Target Task](https://cloud.google.com/tasks/docs/creating-http-target-tasks?hl=en)
+
+`Timeouts: for all HTTP Target task handlers the default timeout is 10 minutes, with a maximum of 30 minutes.`
+
+#### [HTTP Target Job attempt_deadline](https://cloud.google.com/scheduler/docs/reference/rpc/google.cloud.scheduler.v1#google.cloud.scheduler.v1.Job)
+
+`For HTTP targets, the default is 3 minutes. The deadline must be in the interval [15 seconds, 30 minutes].`
+
 ### Observability
 
-[Cloud Profiler](https://cloud.google.com/profiler) が Cloud Run では動かないので、少々残念。
-
-# Cloud Run で悩ましいところ
-
-~~全体を見ると、Cloud Run がとても魅力的ではあるが、Cloud Run は Request を処理していない間、CPU割当がなくなり、しばらくした後、その Instance を使い回すという点が、少し引っかかっている。
-この挙動は Cloud Run 特有で、Local や Unit Test でチェックするのが難しいので、問題を発見するのが難しそうだと感じる。
-gRPC のコネクションの管理や使っている Library が裏で何かしていないかを気にしておかないと、思いも寄らないタイミングで膝に矢を受けてしまいそうだ。~~
-
-[Always CPU](https://cloud.google.com/run/docs/configuring/cpu-allocation?hl=en) の機能が増えたので、この部分がつらいなら、Always CPUにすれば解決するようになった。
+[Cloud Profiler](https://cloud.google.com/profiler) が [Always CPU](https://cloud.google.com/run/docs/configuring/cpu-allocation?hl=en) をONにしていない場合は、Cloud Run ではうまく動かないのは少し不便なところではある。
+まぁ、CPU割当がちょくちょく停止するので、仕方ない気もする。
 
 # App Engine と Cloud Run を Mix するために
 
-現状だと、App Engine と Cloud Run をやりたいことに合わせて使い分けたい。
+App Engine と Cloud Run をやりたいことに合わせてMixして使うのも結構強力だ。
 それができる機能として [Serverless NEG](https://cloud.google.com/load-balancing/docs/negs/serverless-neg-concepts) がある。
 Serverless NEG はざっくり言うと [External HTTP(S) Load Balancing](https://cloud.google.com/load-balancing/docs/https?hl=en) の後ろに App Engine, Cloud Run, Cloud Functions を持ってこれるサービス。
 Google Cloud Customer Engineer の Seiji Ariga さんが [噛み砕いた記事](https://medium.com/google-cloud-jp/serverless-neg-%E3%81%A7%E3%82%B7%E3%82%B9%E3%83%86%E3%83%A0%E9%96%8B%E7%99%BA%E3%82%92%E3%82%88%E3%82%8A%E6%9F%94%E8%BB%9F%E3%81%AB-4f9cebd2780f) を書いてくれている。
@@ -122,10 +126,12 @@ Path ごとに向き先を設定できるので、 `/api/*` は App Engine `/ima
 
 更に External HTTP(S) Load Balancing が前にいれば、 [Cloud Armor](https://cloud.google.com/armor) が使えたり、Tokyo Region の [App Engine, Cloud Run に Custom Domain を割り当てた時に遅くなる問題](https://cloud.google.com/appengine/docs/standard/go/mapping-custom-domains?hl=en) が解決されるなど良いことが多い。
 
-ただ、Severless NEG はApp EngineやCloud Runをそのまま使うのに比べて [制限事項](https://cloud.google.com/load-balancing/docs/negs/serverless-neg-concepts?hl=en#limitations) がそれなりにある。
-Deadline が 30sec 固定は地味に気になるが、User からの Request で、30sec 以上かけることはあんまりないから、なんとかなるだろう。
-この制限があるので、Cloud Tasks, Cloud Scheduler からの Request は Serverless NEG 経由ではなく、直接送った方がいいかもしれない。
-Cloud Armor を ON にしている時に Cloud Tasks, Cloud Scheduler の Request をかける必要はないし、External HTTP(S) Load Balancing の料金の節約にもなる。
+Severless NEGを使う場合、App EngineやCloud Runをそのまま使うのに比べて [制限事項](https://cloud.google.com/load-balancing/docs/negs/serverless-neg-concepts?hl=en#limitations) があるので、一通り確認しておいた方がよい。
+1 Projectでのシンプルな構成であれば問題なるものは少ないと思うが、複雑なことをやろうとしている場合、制限に引っかかるものがあるかもしれない。
+
+Cloud Tasks, Cloud Pub/SubなどからのRequestをどこに送るのか？というのも少し気にする必要がある。
+自分はHTTP LB経由ではなく直接App EngineやCloud Runに送ることが多い。
+HTTP LBを経由する必要性をあまり感じないからだ。
 
 # 余談
 
