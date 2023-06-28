@@ -34,17 +34,17 @@ App Engine は規定されたいくつかの種類から選択するが、Cloud 
 
 #### App Engine Instance Class
 
-|Instance Class|Memory Limit|CPU Limit|
-|---|---|---|---|
-|B1|128 MiB|600 Mhz|
-|B2|256 MiB|1.2 Ghz|
-|B4|512 MiB|2.4 Ghz|
-|B4_1G|1024 MiB|2.4 Ghz|
-|B8|1024 MiB|4.8 Ghz|
-|F1|128 MiB|600 Mhz|
-|F2|256 MiB|1.2 Ghz|
-|F4|512 MiB|2.4 Ghz|
-|F4_1G|1024 MiB|2.4 Ghz|
+| Instance Class | Memory Limit | CPU Limit |
+| ---- | ---- | ---- |
+| B1 | 128 MiB | 600 Mhz |
+| B2 | 256 MiB | 1.2 Ghz |
+| B4 | 512 MiB | 2.4 Ghz |
+| B4_1G | 1024 MiB | 2.4 Ghz |
+| B8 | 1024 MiB | 4.8 Ghz |
+| F1 | 128 MiB | 600 Mhz |
+| F2 | 256 MiB | 1.2 Ghz |
+| F4 | 512 MiB | 2.4 Ghz |
+| F4_1G | 1024 MiB | 2.4 Ghz |
 
 #### Cloud Run
 
