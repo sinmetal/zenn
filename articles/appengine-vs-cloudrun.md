@@ -21,7 +21,7 @@ Cloud Run には fully managed と for Anthos があるが、この記事では 
 
 ### 課金体系
 
-App Engine は Instance 課金、Cloud Run は 使用したリソースでの課金になる。
+App Engine は Instance 課金、Cloud Run は 使用したリソースでの課金になる。
 App Engine(automatic scaling, basic scaling) は Instance が起動してから、最後のリクエストの15分後に終了するまでを単位にしている。
 Cloud Run は 100ms 単位で切り上げで計算される。
 そのため、1min毎に5sec処理するみたいなことをした時に、App Engine は Instance が終了しないので、ずっと課金対象だが、Cloud Run は都度 5000ms 課金されるだけで済む。
@@ -97,7 +97,7 @@ App EngineはScaling Configによって変わる。
 
 #### Cloud Tasks, Cloud Scheduler
 
-App Engine Target だと timeoutは 24h
+App Engine Target Task だと 送信先がBasic Scaling or Manual Scaling なら timeoutは 24h
 Cloud Run 自体の Deadline は 60min だが、Cloud Run に Request を送るために使う HTTP Target Task が 30min までなので、こっちに引っ張られてしまう。
 
 * App Engine HTTP Task to Basic Scaling and Manual Scaling : 24h
