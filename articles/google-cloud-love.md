@@ -74,6 +74,20 @@ HTTP Requestが来ない状態がしばらく続くとInstanceはshutdownされ�
 
 # Cloud Firestore
 
+Cloud FirestoreはKeyValueStore型のDBです。
+Instanceという概念がなく、Read Write1回辺りいくらという料金体系です。
+大規模システムで凄まじい数のRWを行うと料金も大規模になりますが、個人で使う分には無料枠内で生きていけます。
 
+Cloud FirestoreにはNative ModeとDatastore Modeの2つがあります。
+Native Modeは元々Mobile Backend as a ServiceとしてのFirebaseに備わっていたFirebase Realtime DBの流れを汲みGoogle Cloudで作られたプロダクトです。
+ブラウザやAndroid, iOSなどのクライアントアプリと直接やり取りする機能があったり、リアルタイムに更新されたデータを取得する機能があります。
+
+Datastore Modeは元々存在していたCloud Datastoreの後継になります。
+元々のDatastoreはBigtableの上に乗っかっていましたが、Firestore Datastore ModeはSpanner的なものの上に乗っかっています。
+機能としてはKeyによるRead WriteとシンプルなQueryが使えます。
+
+個人でちょっとしたものを作るなら、どちらを使っても良いのですが、筆者はNative Modeを使うことが多いです。
+ブラウザから直接Read Writeできるのも便利だし、リアルタイムの更新取得やオフライン機能があるのも良いです。
+サーバサイドで使う場合もリアルタイムの更新取得が結構便利でポーリングする必要がなくなります。
 
 # BigQuery
