@@ -15,7 +15,7 @@ Advent Calendarの初日ということもあり、筆者がなぜGoogle Cloud�
 そんな小さなシステムから大きなシステムまで作れるところも魅力に感じています。
 この記事では個人でよく作っている小さなシステムに注力しています。
 
-まず、筆者が魅力に感じているGoogle Cloudの思想としてDatacenter as a Computerがあります。
+筆者が魅力に感じているGoogle Cloudの思想としてDatacenter as a Computerがあります。
 日本語だとGoogle Developer AdvocateのKazunoriさんが [Google Cloud Platformの謎テクノロジーを掘り下げる](https://qiita.com/kazunori279/items/3ce0ba40e83c8cc6e580#datacenter-as-a-computer) で概要を書いてくれています。
 ものすごく強力な1台のマシンを用意するのではなく、普通のマシンをたくさん横に並べて必要な時にすぐに使えるようにすることで、Google規模のサービスが効率よく動いています。
 小さなシステムはこの仕組みに乗っかって、巨大なデータセンターの端っこを少し使わせてもらうことで、のんびり暮らすことができます。
@@ -33,11 +33,11 @@ Cloud RunはHTTP Requestを受け取る任意のContainer ImageをDeployして�
 まさにGoogleのデータセンターの端っこで生きている感じです。
 
 Cloud Runでシステムを構築する場合、Containerを起動してからHTTP Requestを受け取れる状態になるまでの時間を短くすることを考える必要があります。
-これはCloud RunがHTTP Requestが来てから、Containerを起動するため、Requestを送った人はその間待つ必要があるため、その時間を短くしたいからです。
+これはCloud RunがHTTP Requestが来てから、Containerを起動するため、Requestを送った人はその間待つことになるからです。
 最小Instance台数を指定して常時1台Instanceを起動しておくこともできますが、アクセスが無い時も常時起動することになるので、お金がかかるし、スケールアウトして2台目のInstanceが起動する時に同じ問題に当たるため、軽減することしかできません。
 筆者はGoogle App Engineを使っている頃から長い間、起動時間を短くすることを考えて生きています。
 現在はGo言語を使ってアプリケーションを作成して、小さなContainer Imageを作ることで、なるべく早く起動するようにしています。
-Webフレームワークも使っておらず、net/http packageを使って書いています。
+Webフレームワークを使う場合も軽量で起動が早いかどうかを気にしています。
 Dockerfileも3行しか無い短いものです。
 
 ``` Dockerfile
@@ -125,7 +125,26 @@ HDDから読みだした後に処理するのにもマシンパワーが必要�
 
 [DremelについてはCloud Solutions Architectの中井悦司さんの記事](https://www.school.ctc-g.co.jp/columns/nakai2/nakai294.html) があるので、これを読むと周辺技術も含めてもっと知ることができます。
 
-## まとめ
+## まとめとおまけ
 
 無料枠の話ばかりしたので、筆者が金の亡者っぽい感じがしますが、まぁ、割と金の亡者で、コスト最適化は大好きです。
 なんなら、仕様をインフラに合わせて考えます。
+
+筆者はDatacenter as a Computerが好きなので、Google Cloudが好きなのですが、プロダクトの中には色々あります。
+BigQueryのように、まさしくDatacenter as a Computerというものもあれば、別段そうでもないものもあります。
+全プロダクト触ってるわけではないですが、好んで使うプロダクトは以下です。
+
+### 好きなプロダクト
+
+* Cloud Run
+* Cloud Firestore
+* Cloud Spanner
+* BigQuery
+
+### そうでもないプロダクト
+
+* Cloud SQL
+* Cloud Composer
+
+[Alloy DB](https://cloud.google.com/alloydb) のように最近出てきて様子を伺っているものもありますし、Cloud StorageやCloud Monitoringのように空気のように使うプロダクトもあります。
+今後もたくさんのアップデートがあり、色んな機能がリリースされ、使うプロダクトも変わっていくと思いますが、Datacenter as a Computerの思想がある限り、なんだかんだGoogle Cloudが好きで、使い続けているのではないかと思います。
