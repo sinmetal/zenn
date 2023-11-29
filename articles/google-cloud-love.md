@@ -8,7 +8,7 @@ published: false
 
 [Google Cloud Champion Innovators Advent Calendar 2023](https://adventar.org/calendars/9217) の1日目の記事です。
 
-Advent Calendarの初日ということもあり、sinmetalがなぜGoogle Cloudが好きなのかについて書きます。
+Advent Calendarの初日ということもあり、筆者がなぜGoogle Cloudが好きなのかについて。
 
 筆者が初めてGoogle Cloudに出会ったのは2011年で、Google App Engineに恋い焦がれてから、ずっとGoogle Cloudを使い続けています。
 現在、仕事ではかなり大きなシステムをGoogle Cloudで扱っていますが、個人で小さなシステムを作るのも好きです。
@@ -16,7 +16,7 @@ Advent Calendarの初日ということもあり、sinmetalがなぜGoogle Cloud
 この記事では個人でよく作っている小さなシステムに注力しています。
 
 まず、筆者が魅力に感じているGoogle Cloudの思想としてDatacenter as a Computerがあります。
-日本語だとGoogle Developer AdvocateのKazunoriさんが[Google Cloud Platformの謎テクノロジーを掘り下げる](https://qiita.com/kazunori279/items/3ce0ba40e83c8cc6e580#datacenter-as-a-computer) で概要を書いてくれています。
+日本語だとGoogle Developer AdvocateのKazunoriさんが [Google Cloud Platformの謎テクノロジーを掘り下げる](https://qiita.com/kazunori279/items/3ce0ba40e83c8cc6e580#datacenter-as-a-computer) で概要を書いてくれています。
 ものすごく強力な1台のマシンを用意するのではなく、普通のマシンをたくさん横に並べて必要な時にすぐに使えるようにすることで、Google規模のサービスが効率よく動いています。
 小さなシステムはこの仕組みに乗っかって、巨大なデータセンターの端っこを少し使わせてもらうことで、のんびり暮らすことができます。
 
@@ -25,7 +25,7 @@ Datacenter as a Computerを体現していて、好きなサービスがCloud Ru
 個人で小さなシステムを作る時もこの2つはよく使います。
 この2つに加えて、データベースとしてCloud Firestoreを加えた3つを個人開発ではよく使っています。
 
-# Cloud Run
+## [Cloud Run](https://cloud.google.com/run)
 
 Cloud RunはHTTP Requestを受け取る任意のContainer ImageをDeployして動かせるプロダクトです。
 `https://{ランダム文字列}.a.run.app` のURLが付与され、証明書の管理などもすべてやってくれるので、個人でちょっとしたシステムを作るのにとても便利です。
@@ -34,19 +34,19 @@ Cloud RunはHTTP Requestを受け取る任意のContainer ImageをDeployして�
 
 Cloud Runでシステムを構築する場合、Containerを起動してからHTTP Requestを受け取れる状態になるまでの時間を短くすることを考える必要があります。
 これはCloud RunがHTTP Requestが来てから、Containerを起動するため、Requestを送った人はその間待つ必要があるため、その時間を短くしたいからです。
-最小Instance台数を指定して常時1台Instanceを起動しておくこともできますが、お金がかかるし、スケールアウトして2台目のInstanceが起動する時に同じ問題に当たるため、軽減することしかできません。
+最小Instance台数を指定して常時1台Instanceを起動しておくこともできますが、アクセスが無い時も常時起動することになるので、お金がかかるし、スケールアウトして2台目のInstanceが起動する時に同じ問題に当たるため、軽減することしかできません。
 筆者はGoogle App Engineを使っている頃から長い間、起動時間を短くすることを考えて生きています。
 現在はGo言語を使ってアプリケーションを作成して、小さなContainer Imageを作ることで、なるべく早く起動するようにしています。
 Webフレームワークも使っておらず、net/http packageを使って書いています。
 Dockerfileも3行しか無い短いものです。
 
-```Dockerfile
+``` Dockerfile
 FROM gcr.io/distroless/static-debian11
 COPY ./app /app
 ENTRYPOINT ["/app"]
 ```
 
-もう1つ最初に考えておくこととしてCPU allocationをどうするか？があります。
+もう1つ最初に考えておくこととして [CPU allocation](https://cloud.google.com/run/docs/configuring/cpu-allocation) をどうするか？があります。
 Cloud Runはdefaultでは、HTTP Requestを処理している時のみCPU割当を行います。
 CPUが割り当てられている時間のみ料金を払えば良いので、Requestが少ないシステムでは非常に安い料金で動かせます。
 自分だけが使うちょっとしたシステムでは非常に嬉しい料金設定です。
@@ -72,7 +72,7 @@ HTTP Requestが来ない状態がしばらく続くとInstanceはshutdownされ�
 | 常時割当 | $0.00001800 / vCPU 秒 毎月 240,000 vCPU 秒無料 | $0.00000200 / GiB 秒 毎月 450,000 GiB 秒まで無料 |
 | Request処理時のみ割当 | $0.00002400 / vCPU 秒 毎月 180,000 vCPU 秒まで無料 | $0.00000250 / GiB 秒 毎月 360,000 GiB 秒まで無料 |
 
-# Cloud Firestore
+## [Cloud Firestore](https://cloud.google.com/firestore)
 
 Cloud FirestoreはKeyValueStore型のDBです。
 Instanceという概念がなく、Read Write1回辺りいくらという料金体系です。
@@ -90,7 +90,7 @@ Datastore Modeは元々存在していたCloud Datastoreの後継になります
 ブラウザから直接Read Writeできるのも便利だし、リアルタイムの更新取得やオフライン機能があるのも良いです。
 サーバサイドで使う場合もリアルタイムの更新取得が結構便利でポーリングする必要がなくなります。
 
-# BigQuery
+## [BigQuery](https://cloud.google.com/bigquery/)
 
 BigQueryはデータウェアハウスのサービスです。
 TB単位のデータでも数秒でフルスキャンすることができる性能が売りですが、KB単位のデータでも数秒でフルスキャンできます。
@@ -101,7 +101,7 @@ BigQueryにはログなど分析したいデータはなんでも入れておく
 Google CloudのAudit Log、Cloud RunのリクエストログやアプリケーションログはCloud LoggingのSink機能を使えば簡単にBigQueryに入れることができます。
 入れたデータをSQLで検索、集計できるのも便利だし、Looker Studioでグラフにして見ても便利です。
 
-# まとめ
+## まとめ
 
 無料枠の話ばかりしたので、筆者が金の亡者っぽい感じがしますが、まぁ、割と金の亡者で、コスト最適化は大好きです。
 なんなら、仕様をインフラに合わせて考えます。
