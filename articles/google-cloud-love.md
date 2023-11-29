@@ -148,3 +148,7 @@ BigQueryのように、まさしくDatacenter as a Computerというものもあ
 
 [Alloy DB](https://cloud.google.com/alloydb) のように最近出てきて様子を伺っているものもありますし、Cloud StorageやCloud Monitoringのように空気のように使うプロダクトもあります。
 今後もたくさんのアップデートがあり、色んな機能がリリースされ、使うプロダクトも変わっていくと思いますが、Datacenter as a Computerの思想がある限り、なんだかんだGoogle Cloudが好きで、使い続けているのではないかと思います。
+
+最近では [BigQueryに文字列やJSONを検索するためののINDEX](https://cloud.google.com/bigquery/docs/search-intro) が作れるようになりました。
+全力マシンパワーでフルスキャンするのがBigQueryですが、最近は効率も気にするようになったわけですね。
+BigQueryがOLAP以外にも使われるようになって、事前に分かっているクエリを何度も実行するような使い方をするなら、やはりINDEXを作るのが便利ですね。
