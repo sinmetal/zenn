@@ -28,7 +28,7 @@ Datacenter as a Computerを体現していて、好きなサービスがCloud Ru
 ## [Cloud Run](https://cloud.google.com/run)
 
 Cloud RunはHTTP Requestを受け取る任意のContainer ImageをDeployして動かせるプロダクトです。
-`https://{ランダム文字列}.a.run.app` のURLが付与され、証明書の管理などもすべてやってくれるので、個人でちょっとしたシステムを作るのにとても便利です。
+`https://{ランダム文字列}.a.run.app` のURLが付与され、ロードバランサや証明書の管理などもすべてやってくれるので、個人でちょっとしたシステムを作るのにとても便利です。
 無料枠が存在するので、自分だけしかアクセスしないものなら、無料枠の中で生きていけます。
 まさにGoogleのデータセンターの端っこで生きている感じです。
 
@@ -100,6 +100,30 @@ BigQueryもInstanceという概念がなく、ストレージの料金とQuery�
 BigQueryにはログなど分析したいデータはなんでも入れておくことができて便利です。
 Google CloudのAudit Log、Cloud RunのリクエストログやアプリケーションログはCloud LoggingのSink機能を使えば簡単にBigQueryに入れることができます。
 入れたデータをSQLで検索、集計できるのも便利だし、Looker Studioでグラフにして見ても便利です。
+CloudのBilling Dataやゲームのキャラクター情報など、何でも入れておけば、好きに見ることができます。
+
+### Dremel
+
+BigQueryの元になっているGoogleのシステムがDremelです。
+DremelはData Center as a Computerの思想を体現していて、とてもGoogleらしいシステムだと思います。
+
+Dremelはインタラクティブなクエリを実行するために生まれたシステムです。
+インタラクティブなクエリの難しいところは、どのようなクエリが実行されるかは分からないため、事前にインデックスを用意するのが難しいことです。
+解決策として、膨大なマシンリソースで超高速にフルスキャンするというパワープレイを行っているのがDremelです。
+巨大なデータをフルスキャンする時、最初にボトルネックになるのはDiskから読み出す処理です。
+HDDだと200MB/s程度読み込めますが、TBやPB読み込もうとすると長い時間がかかってしまいます。
+そこでデータを分割してたくさんのHDDに保存して並列に読むことで、TB単位のデータを数秒で処理できるようにしています。
+
+![](/images/google-cloud-love/dremel1.png)
+
+HDDから読みだした後に処理するのにもマシンパワーが必要なので、たくさんのContainerを起動して処理しています。
+この圧倒的パワーにより、非常に大量のデータに対してLIKE句や正規表現を実行しても現実的な時間で結果を取得できます。
+
+![](/images/google-cloud-love/dremel2.png)
+
+これをデータセンターの中でクエリ実行時に行っているのが、とっても面白いですね。
+
+[DremelについてはCloud Solutions Architectの中井悦司さんの記事](https://www.school.ctc-g.co.jp/columns/nakai2/nakai294.html) があるので、これを読むと周辺技術も含めてもっと知ることができます。
 
 ## まとめ
 
