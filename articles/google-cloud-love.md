@@ -101,6 +101,13 @@ BigQueryにはログなど分析したいデータはなんでも入れておく
 Google CloudのAudit Log、Cloud RunのリクエストログやアプリケーションログはCloud LoggingのSink機能を使えば簡単にBigQueryに入れることができます。
 入れたデータをSQLで検索、集計できるのも便利だし、Looker Studioでグラフにして見ても便利です。
 
+### Dremel
+
+BigQueryの元になっているGoogleのシステムがDremelです。
+DremelはData Center as a Computerの思想を体現していて、とてもGoogleらしいシステムだと思います。
+
+[DremelについてはCloud Solutions Architectの中井悦司さんの記事](https://www.school.ctc-g.co.jp/columns/nakai2/nakai294.html) があるので、これを読むと周辺技術も含めてもっと知ることができます。
+
 ## まとめ
 
 無料枠の話ばかりしたので、筆者が金の亡者っぽい感じがしますが、まぁ、割と金の亡者で、コスト最適化は大好きです。
