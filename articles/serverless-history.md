@@ -1,6 +1,6 @@
 ---
 title: "Google Cloud Serverless Product History"
-emoji: "♥"
+emoji: "🐕"
 type: "tech" # tech: 技術記事 / idea: アイデア
 topics: ["gcp"]
 published: false
@@ -75,3 +75,44 @@ apstndbさんの [ポエム](https://qiita.com/apstndb/items/314e461aed518a4ad26
 
 ## Google App Engine Flexible Environment
 
+Flexible EnvironmentはVM上でGoogle App EngineのContainerを動作させるプロダクトです。
+元々用意されているRuntimeを使うこともできますが、任意のDockerfileを動かすことも可能です。
+VersioningなどStandard Environmentと同様の機能もありますが、VMなのでSpinupが1minほどかかるし、Google App Engine固有のAPIは使えないので、微妙になんとも言い難いプロダクトでした。
+
+### 技術的な歴史
+
+Standard Environemntが多くの制約を抱えていた頃、その制約を乗り越えるために作り出されました。
+生み出されるまで結構な時間がかかっており、VM-based Backends -> Managed VMs -> Flexible Environmentと名前を変えています。
+[Managed VMs誕生までの歴史を振り返る](https://qiita.com/sinmetal/items/68f0e21e1f33e3a553a1) で振り返ったことがあるので、興味がある方は読んでみてください。
+
+### 現在
+
+Standard Environmentの制約の多くがなくなり、Containerを動かすならCloud RunやGoogle Kubernetes Engineがある今、Flexible Environmentのポジションは結構微妙です。
+正直、筆者は何に使うのかよく分かりません。
+時代の波の合間で生まれたが、流れには乗り切れず、中途半端になってしまった少しかわいそうなプロダクトです。
+
+## Cloud Functions
+
+Serverlessという言葉が流行り始めて、Function as a Serviceが流行った時に誕生しました。
+1 Functionにつき1つDeployするので、これでアプリケーションを作るというよりは、画像がアップロードされたらサムネイルを作るといった何かをトリガーして1つだけ処理を行う時に使います。
+正直、元々Google App Engineがあったので、Cloud Function使う理由ってあんまりないんじゃ・・・？と思ったりしていましたが、シンプルなプロダクトではありました。
+
+## Cloud Run
+
+Google App Engine Standard, Flexible Environment, Cloud Functions...と歴史を重ねて最終的に出てきたのがCloud Runです。
+HTTP Requestを受け取る任意のContainer ImageをDeployして動かすことができます。
+もう全部こいつでいいんじゃ？と思えるほどのポテンシャルを秘めており、機能追加も盛んなプロダクトになっています。
+
+## Serverlessプロダクトのこれから
+
+ある程度役割分けはされているServerlessプロダクトたちですが、裏の仕組みは整理され、統合されていってる気配があります。
+Containerを動かすというところは同じになっているので、 [buildpacks](https://github.com/GoogleCloudPlatform/buildpacks) で各プロダクトのContainer Imageを作るようになっています。
+
+Google App Engine Standardにも1st gen, 2nd genがありますが、Cloud FunctionsとCloud Runにも1st gen, 2nd genがあります。
+Google App Engine Standardは2nd genが主にgVisorですが、Cloud FunctionsとCloud Runは1st genがgVisorです。([Cloud Run](https://cloud.google.com/run/docs/container-contract), [Cloud Functions](https://cloud.google.com/functions/docs/securing?hl=ja#isolation_and_sandboxing))
+リリース時期などを考えるとApp Engine Standard 2nd genと似た仕組みで動いていたのではないかと思います。
+gVisorの場合、spinupは早くて良いのですが、Linuxと完全な互換性はないため、なんでも動くわけでは有りません。([gVisor syscall 互換性リファレンス](https://gvisor.dev/docs/user_guide/compatibility/linux/amd64/))
+Cloud Run gen2はgVisorがなくなり、Linuxとの完全な互換性を持っています。
+spinupが少し遅くなったのと必要なマシンスペックが上がっていますが、起動してしまえば少し早いといった感じになっています。
+Cloud Functions gen2はCloud Run gen2の上で動いているので、同じものです。
+max concurrent requestも2以上を指定できるようになっているので、DBに接続する必要があるFunctionでRequestが多い場合はgen2を使った方が効率よく処理できるようになりました。
