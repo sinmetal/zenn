@@ -3,7 +3,7 @@ title: "sinmetalはなぜGoogle Cloudが好きなのか？"
 emoji: "♥"
 type: "tech" # tech: 技術記事 / idea: アイデア
 topics: ["gcp"]
-published: false
+published: true
 ---
 
 [Google Cloud Champion Innovators Advent Calendar 2023](https://adventar.org/calendars/9217) の1日目の記事です。
@@ -149,13 +149,14 @@ BigQueryのように、まさしくDatacenter as a Computerというものもあ
 [Alloy DB](https://cloud.google.com/alloydb) のように最近出てきて様子を伺っているものもありますし、Cloud StorageやCloud Monitoringのように空気のように使うプロダクトもあります。
 
 既存のプロダクトも機能がどんどん増えています。
-最近では [BigQueryに文字列やJSONを検索するためののINDEX](https://cloud.google.com/bigquery/docs/search-intro) が作れるようになりました。
-全力マシンパワーでフルスキャンするのがBigQueryですが、最近は効率も気にするようになったわけですね。
-BigQueryがOLAP以外にも使われるようになって、事前に分かっているクエリを何度も実行するような使い方をするなら、やはりINDEXを作るのが便利ですね。
+様々な人が色んなユースケースで使うようになっているので、それに対応するように機能がリリースされています。
+例えば、 [BigQueryに文字列やJSONを検索するためののINDEX](https://cloud.google.com/bigquery/docs/search-intro) を作れるようになったのは面白いですね。
+全力マシンパワーでフルスキャンするのがBigQueryですが、OLAP以外にも日々のバッチジョブなどでも使われるようになり、事前に決まっているクエリを実行することも多くなりました。
+その結果、最近は効率も気にするようになっているわけですね。
 
-今後もたくさんのアップデートがあり、色んな機能がリリースされ、使うプロダクトも変わっていくと思いますが、Datacenter as a Computerの思想がある限り、なんだかんだGoogle Cloudが好きで、使い続けているのではないかと思います。
+今後もたくさんのアップデートがあり、様々な機能がリリースされ、使うプロダクトも変わっていくと思いますが、Datacenter as a Computerの思想がある限り、なんだかんだGoogle Cloudが好きで、使い続けているのではないかと思います。
 
-Google Cloudのプロダクトが増えるに連れ、利用者も色んな人が増えました。
+Google Cloudのプロダクトが増えるに連れ、利用者も様々な人が増えました。
 筆者が普段使わないプロダクトを使う人たちもたくさんいます。
 Google Compute EngineでVMをごりごり動かしている人、Google Kuvernete EngineでContainerを動かしている人、Dataflowでビッグデータを処理している人、Vertex AIで機械学習をしている人・・・。
 昔々、Google App Engineしか無かった頃と比べて、本当に色んな人たちがいます。
