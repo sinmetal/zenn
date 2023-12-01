@@ -10,7 +10,7 @@ published: true
 
 Advent Calendarの初日ということもあり、筆者がなぜGoogle Cloudが好きなのかについて。
 
-筆者が初めてGoogle Cloudに出会ったのは2011年で、Google App Engineに恋い焦がれてから、ずっとGoogle Cloudを使い続けています。
+筆者が初めてGoogle Cloudに出会ったのは2011年で、 [Google App Engine](https://cloud.google.com/appengine) に恋い焦がれてから、ずっとGoogle Cloudを使い続けています。
 現在、仕事ではかなり大きなシステムをGoogle Cloudで扱っていますが、個人で小さなシステムを作るのも好きです。
 そんな小さなシステムから大きなシステムまで作れるところも魅力に感じています。
 この記事では個人でよく作っている小さなシステムに注力しています。
@@ -152,12 +152,12 @@ BigQueryのように、まさしくDatacenter as a Computerというものもあ
 様々な人が色んなユースケースで使うようになっているので、それに対応するように機能がリリースされています。
 例えば、 [BigQueryに文字列やJSONを検索するためののINDEX](https://cloud.google.com/bigquery/docs/search-intro) を作れるようになったのは面白いですね。
 全力マシンパワーでフルスキャンするのがBigQueryですが、OLAP以外にも日々のバッチジョブなどでも使われるようになり、事前に決まっているクエリを実行することも多くなりました。
-月額定額料金のプランを使っている人も増えたので、より効率よく少ない [スロット](https://cloud.google.com/bigquery/docs/slots) でクエリを処理できるようになっていってます。
+[月額定額料金のプラン](https://cloud.google.com/bigquery/pricing?hl=en#capacity_compute_analysis_pricing) を使っている人も増えたので、効率よく少ない [スロット](https://cloud.google.com/bigquery/docs/slots) でクエリを処理できるようになっていってます。
 
 今後もたくさんのアップデートがあり、様々な機能がリリースされ、使うプロダクトも変わっていくと思いますが、Datacenter as a Computerの思想がある限り、なんだかんだGoogle Cloudが好きで、使い続けているのではないかと思います。
 
 Google Cloudのプロダクトが増えるに連れ、利用者も様々な人が増えました。
 筆者が普段使わないプロダクトを使う人たちもたくさんいます。
-Google Compute EngineでVMをごりごり動かしている人、Google Kuvernete EngineでContainerを動かしている人、Dataflowでビッグデータを処理している人、Vertex AIで機械学習をしている人・・・。
+[Google Compute Engine](https://cloud.google.com/compute) でVMをごりごり動かしている人、 [Google Kubernetes Engine](https://cloud.google.com/kubernetes-engine) でContainerを動かしている人、 [Dataflow](https://cloud.google.com/dataflow) でビッグデータを処理している人、 [Vertex AI](https://cloud.google.com/vertex-ai) で機械学習をしている人・・・。
 昔々、Google App Engineしか無かった頃と比べて、本当に色んな人たちがいます。
 そんな個性豊かなGoogle Cloud Champion Innovatorsが送るAdvent Calendarをお楽しみください。 
