@@ -127,7 +127,7 @@ HTTP Requestを受け取る任意のContainer ImageをDeployして動かすこ�
 もう全部こいつでいいんじゃ？と思えるほどのポテンシャルを秘めており、機能追加も盛んなプロダクトになっています。
 
 Google App EngineはWebアプリケーションのためのプラットフォームでしたが、Cloud RunはGoogle Cloudで現在のServerlessプロダクトを作るとしたら、こうなるだろうという感じのプロダクトです。
-[gRPC](https://cloud.google.com/run/docs/triggering/grpc) や [Web Socket](https://cloud.google.com/run/docs/triggering/websockets) など、Google App Engineで期待されたけど、実現できなかった機能が搭載されており、現代の技術でもう一回Serverlssプロダクトを作った感じがあります。
+[gRPC](https://cloud.google.com/run/docs/triggering/grpc) や [Web Socket](https://cloud.google.com/run/docs/triggering/websockets) など、Google App Engine Standard Environmentで期待されたけど、実現できなかった機能が搭載されており、現代の技術でもう一回Serverlssプロダクトを作った感じがあります。
 
 ### 現在
 
