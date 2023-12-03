@@ -96,7 +96,7 @@ Standard Environmentの制約の多くがなくなり、Containerを動かすな
 
 Serverlessという言葉が流行り始めて、Function as a Serviceが流行った時に誕生しました。
 1 Functionにつき1つDeployするので、これでアプリケーションを作るというよりは、画像がアップロードされたらサムネイルを作るといった何かをトリガーして1つだけ処理を行う時に使います。
-正直、元々Google App Engineがあったので、Cloud Function使う理由ってあんまりないんじゃ・・・？と思ったりしていましたが、シンプルなプロダクトではありました。
+リリース当初は元々Google App Engineがあるので、Cloud Function使う理由ってあんまりないんじゃ・・・？と思ったりしていましたが、シンプルなプロダクトではありました。
 
 ### 現在
 
@@ -106,8 +106,19 @@ Function as a Serviceとしてシンプルなポジションを確立してい�
 Event Triggerも1st gen時代はCloud Function専用に用意されていましたが、その後、 [Eventarc](https://cloud.google.com/eventarc/docs/overview) がGoogle Cloud全体のイベントトリガープロダクトとなりました。
 2nd genではEventarcが中心になっています。
 
-DBアクセスなどもなく、シンプルなFunction as a Serviceが必要な場合は1st genを使う。
-少し重い処理を行う。EverntarcでサポートされているTriggerを使いたい。インフラの利用効率を上げたい場合は2nd gen
+1st genと2nd genの使い分けですが、以下のような感じでしょうか。
+ちょっとしたことを行うなら1st gen、重たい処理や多くのRequestを処理するなら2nd genですね。
+
+#### 1st genが向きそう
+
+* Requestが少ない
+* 1 Instanceで同時に複数Request処理できない
+
+#### 2nd genが向きそう
+
+* Requestが多い
+* 1 Instanceで同時に複数Request処理できる
+* spinupに時間がかかるので、新しいInstanceが作られる頻度を減らしたい
 
 ## Cloud Run
 
@@ -115,16 +126,38 @@ Google App Engine Standard, Flexible Environment, Cloud Functions...と歴史を
 HTTP Requestを受け取る任意のContainer ImageをDeployして動かすことができます。
 もう全部こいつでいいんじゃ？と思えるほどのポテンシャルを秘めており、機能追加も盛んなプロダクトになっています。
 
+Google App EngineはWebアプリケーションのためのプラットフォームでしたが、Cloud RunはGoogle Cloudで現在のServerlessプロダクトを作るとしたら、こうなるだろうという感じのプロダクトです。
+[gRPC](https://cloud.google.com/run/docs/triggering/grpc) や [Web Socket](https://cloud.google.com/run/docs/triggering/websockets) など、Google App Engineで期待されたけど、実現できなかった機能が搭載されており、現代の技術でもう一回Serverlssプロダクトを作った感じがあります。
+
+### 現在
+
+[Direct VPC](https://cloud.google.com/run/docs/configuring/vpc-direct-vpc?hl=en), [Sidecar Container](https://cloud.google.com/run/docs/deploying?hl=en#sidecars) など欲しいなーと思う機能がリリースされていっていて、人類の期待を背負っています。
+
+[Cloud Runにも1st genと2nd gen](https://cloud.google.com/run/docs/about-execution-environments) があります。
+使い分けは公式ドキュメントの通りですね。
+
 ## Serverlessプロダクトの最近
 
 役割分けされているServerlessプロダクトたちですが、裏の仕組みは整理され、統合されていってる気配があります。
 Containerを動かすというところは同じになっているので、 [buildpacks](https://github.com/GoogleCloudPlatform/buildpacks) で各プロダクトのContainer Imageを作るようになっています。
+仕組みが整備されたことで、Runtimeの更新が早くなりました。
+Google App Engineも各Runtimeの新しいVersionに対応するのに昔は年単位でかかっていましたが、最近は早くなりました。
 
-Google App Engine Standardにも1st gen, 2nd genがありますが、Cloud FunctionsとCloud Runにも1st gen, 2nd genがあります。
+Google App Engine Standardの1st gen, 2nd genとCloud Functions, Cloud Runの1st gen, 2nd genは内容が異なります。
 Google App Engine Standardは2nd genが主にgVisorですが、Cloud FunctionsとCloud Runは1st genがgVisorです。([Cloud Run](https://cloud.google.com/run/docs/container-contract), [Cloud Functions](https://cloud.google.com/functions/docs/securing?hl=ja#isolation_and_sandboxing))
 リリース時期などを考えるとApp Engine Standard 2nd genと似た仕組みで動いていたのではないかと思います。
 gVisorの場合、spinupは早くて良いのですが、Linuxと完全な互換性はないため、なんでも動くわけでは有りません。([gVisor syscall 互換性リファレンス](https://gvisor.dev/docs/user_guide/compatibility/linux/amd64/))
 Cloud Run gen2はgVisorがなくなり、Linuxとの完全な互換性を持っています。
-spinupが少し遅くなったのと必要なマシンスペックが上がっていますが、起動してしまえば少し早いといった感じになっています。
+spinupが少し遅くなったのと必要なマシンスペックが上がっていますが、起動してしまえば早いといった感じになっています。
 Cloud Functions gen2はCloud Run gen2の上で動いているので、同じものです。
-max concurrent requestも2以上を指定できるようになっているので、DBに接続する必要があるFunctionでRequestが多い場合はgen2を使った方が効率よく処理できるようになりました。
+max concurrent requestも2以上を指定できるようになっているので、DBに接続する必要があるFunctionでRequestが多い場合などはgen2を使った方が効率よく処理できるようになりました。
+
+|  | 1st gen | 2nd gen |
+| ---- | ---- | ---- |
+| Google App Engine Standard | 謎 | gVisor |
+| Cloud Functions | gVisor | VM |
+| Cloud Run | gVisor | VM |
+
+長時間処理を行うための [Cloud Run Jobs](https://cloud.google.com/run/docs/execute/jobs) が登場したりと、まだ、Serverlessプロダクトには多くのことが求められています。
+Google App EngineはWebのためのものでしたが、Cloud RunはContainerになってたらなんでも乗せたい人類の夢が集められてますね。
+今後のアップデートにも期待しましょう。
