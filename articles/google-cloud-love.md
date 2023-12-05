@@ -23,7 +23,7 @@ Advent Calendarの初日ということもあり、筆者がなぜGoogle Cloud�
 Datacenter as a Computerを体現していて、好きなサービスがCloud RunとBigQueryです。
 この2つはまさに使う時だけ瞬間的にリソースを使えるサービスです。
 個人で小さなシステムを作る時もこの2つはよく使います。
-この2つに加えて、データベースとしてCloud Firestoreを加えた3つを個人開発ではよく使っています。
+この2つに加えて、データベースとしてFirestoreを加えた3つを個人開発ではよく使っています。
 
 ## [Cloud Run](https://cloud.google.com/run)
 
@@ -72,13 +72,13 @@ HTTP Requestが来ない状態がしばらく続くとInstanceはshutdownされ�
 | 常時割当 | $0.00001800 / vCPU 秒 毎月 240,000 vCPU 秒無料 | $0.00000200 / GiB 秒 毎月 450,000 GiB 秒まで無料 |
 | Request処理時のみ割当 | $0.00002400 / vCPU 秒 毎月 180,000 vCPU 秒まで無料 | $0.00000250 / GiB 秒 毎月 360,000 GiB 秒まで無料 |
 
-## [Cloud Firestore](https://cloud.google.com/firestore)
+## [Firestore](https://cloud.google.com/firestore)
 
-Cloud FirestoreはKeyValueStore型のDBです。
+FirestoreはKeyValueStore型のDBです。
 Instanceという概念がなく、Read Write1回辺りいくらという料金体系です。
 大規模システムで凄まじい数のRWを行うと料金も大規模になりますが、個人で使う分には無料枠内で生きていけます。
 
-Cloud FirestoreにはNative ModeとDatastore Modeの2つがあります。
+FirestoreにはNative ModeとDatastore Modeの2つがあります。
 Native Modeは元々Mobile Backend as a ServiceとしてのFirebaseに備わっていたFirebase Realtime DBの流れを汲みGoogle Cloudで作られたプロダクトです。
 ブラウザやAndroid, iOSなどのクライアントアプリと直接やり取りする機能があったり、リアルタイムに更新されたデータを取得する機能があります。
 
@@ -137,7 +137,7 @@ BigQueryのように、まさしくDatacenter as a Computerというものもあ
 ### 好きなプロダクト
 
 * Cloud Run
-* Cloud Firestore
+* Firestore
 * Cloud Spanner
 * BigQuery
 
@@ -146,7 +146,7 @@ BigQueryのように、まさしくDatacenter as a Computerというものもあ
 * Cloud SQL
 * Cloud Composer
 
-[Alloy DB](https://cloud.google.com/alloydb) のように最近出てきて様子を伺っているものもありますし、Cloud StorageやCloud Monitoringのように空気のように使うプロダクトもあります。
+[AlloyDB](https://cloud.google.com/alloydb) のように最近出てきて様子を伺っているものもありますし、Cloud StorageやCloud Monitoringのように空気のように使うプロダクトもあります。
 
 既存のプロダクトも機能がどんどん増えています。
 様々な人が色んなユースケースで使うようになっているので、それに対応するように機能がリリースされています。
