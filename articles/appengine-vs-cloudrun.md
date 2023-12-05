@@ -1,20 +1,20 @@
 ---
-title: "Google App Engine VS Cloud Run"
+title: "App Engine VS Cloud Run"
 emoji: "🦁"
 type: "tech" # tech: 技術記事 / idea: アイデア
 topics: ["GoogleAppEngine","CloudRun","gcp"]
 published: true
 ---
 
-ちょいちょい、これから Web Application を作るなら、[Google App Engine](https://cloud.google.com/appengine/) と [Cloud Run](https://cloud.google.com/run) どちらを使うべきか？と聞かれるので、思いの丈を綴っておこうと思う。
+ちょいちょい、これから Web Application を作るなら、[App Engine](https://cloud.google.com/appengine/) と [Cloud Run](https://cloud.google.com/run) どちらを使うべきか？と聞かれるので、思いの丈を綴っておこうと思う。
 
 # 結論
 
 僕はどちらにも好きなところと嫌いなところがあって、使い分けているが、だいたい Cloud Runを使っている。
-Google App Engineを使うのは、Landing Pageのようなあまり複雑なことをしないケース。
+App Engineを使うのは、Landing Pageのようなあまり複雑なことをしないケース。
 
 この先は2つを比べて、僕がどちらを使うのかを判断する時の材料を書いていく。
-Google App Engine(以下App Engine) には Standard と Flex があるが、この記事では Standard を主に扱っている。
+App Engine には Standard と Flex があるが、この記事では Standard を主に扱っている。
 Cloud Run には fully managed と for Anthos があるが、この記事では fully managed を主に扱っている。
 
 # App Engine と Cloud Run を比べてみる

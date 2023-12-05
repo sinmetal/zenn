@@ -10,7 +10,7 @@ published: true
 
 Advent Calendarの初日ということもあり、筆者がなぜGoogle Cloudが好きなのかについて。
 
-筆者が初めてGoogle Cloudに出会ったのは2011年で、 [Google App Engine](https://cloud.google.com/appengine) に恋い焦がれてから、ずっとGoogle Cloudを使い続けています。
+筆者が初めてGoogle Cloudに出会ったのは2011年で、 [App Engine](https://cloud.google.com/appengine) に恋い焦がれてから、ずっとGoogle Cloudを使い続けています。
 現在、仕事ではかなり大きなシステムをGoogle Cloudで扱っていますが、個人で小さなシステムを作るのも好きです。
 そんな小さなシステムから大きなシステムまで作れるところも魅力に感じています。
 この記事では個人でよく作っている小さなシステムに注力しています。
@@ -35,7 +35,7 @@ Cloud RunはHTTP Requestを受け取る任意のContainer ImageをDeployして�
 Cloud Runでシステムを構築する場合、Containerを起動してからHTTP Requestを受け取れる状態になるまでの時間を短くすることを考える必要があります。
 これはCloud RunがHTTP Requestが来てから、Containerを起動するため、Requestを送った人はその間待つことになるからです。
 最小Instance台数を指定して常時1台Instanceを起動しておくこともできますが、アクセスが無い時も常時起動することになるので、お金がかかるし、スケールアウトして2台目のInstanceが起動する時に同じ問題に当たるため、軽減することしかできません。
-筆者はGoogle App Engineを使っている頃から長い間、起動時間を短くすることを考えて生きています。
+筆者はApp Engineを使っている頃から長い間、起動時間を短くすることを考えて生きています。
 現在はGo言語を使ってアプリケーションを作成して、小さなContainer Imageを作ることで、なるべく早く起動するようにしています。
 Webフレームワークを使う場合も軽量で起動が早いかどうかを気にしています。
 Dockerfileも3行しか無い短いものです。
@@ -158,6 +158,6 @@ BigQueryのように、まさしくDatacenter as a Computerというものもあ
 
 Google Cloudのプロダクトが増えるに連れ、利用者も様々な人が増えました。
 筆者が普段使わないプロダクトを使う人たちもたくさんいます。
-[Google Compute Engine](https://cloud.google.com/compute) でVMをごりごり動かしている人、 [Google Kubernetes Engine](https://cloud.google.com/kubernetes-engine) でContainerを動かしている人、 [Dataflow](https://cloud.google.com/dataflow) でビッグデータを処理している人、 [Vertex AI](https://cloud.google.com/vertex-ai) で機械学習をしている人・・・。
-昔々、Google App Engineしか無かった頃と比べて、本当に色んな人たちがいます。
+[Compute Engine](https://cloud.google.com/compute) でVMをごりごり動かしている人、 [Google Kubernetes Engine](https://cloud.google.com/kubernetes-engine) でContainerを動かしている人、 [Dataflow](https://cloud.google.com/dataflow) でビッグデータを処理している人、 [Vertex AI](https://cloud.google.com/vertex-ai) で機械学習をしている人・・・。
+昔々、App Engineしか無かった頃と比べて、本当に色んな人たちがいます。
 そんな個性豊かなGoogle Cloud Champion Innovatorsが送るAdvent Calendarをお楽しみください。 

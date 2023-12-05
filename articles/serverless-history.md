@@ -10,16 +10,16 @@ sinmetalから見たGoogle Cloud Serverless Productたちの歴史と現状を�
 
 ## リリース順
 
-* Google App Engine Standard Environment (2008年)
-* Google App Engine Flexible Environment (2016年)
+* App Engine Standard Environment (2008年)
+* App Engine Flexible Environment (2016年)
 * Cloud Functions (2017年)
 * Cloud Run (2018年)
 
-## Google App Engine Standard Environment
+## App Engine Standard Environment
 
 最古のServerless Productで昔はServerlessという言葉は使われておらず、WebアプリケーションのためのPlatform as a Serviceと呼ばれていました。
 Google Cloudより昔からあるため、App Engine単体でPlatformになっています。
-Google App EngineはPlatformなので、単純に自分のアプリケーションを動かすだけではなく、Webアプリケーションでよく必要になる要素がセットです。
+App EngineはPlatformなので、単純に自分のアプリケーションを動かすだけではなく、Webアプリケーションでよく必要になる要素がセットです。
 全文検索のAPIや画像処理用のAPIなど様々なものがありました。
 セットで提供されている者たちは独自のAPIだったため、SDKもLocal環境もすべて独自で用意されていました。
 ただ、逆に制約も多くありました。
@@ -36,11 +36,11 @@ Cloudに求められるものも変わっていきました。
 
 また、Googleのビジネスも変わったように感じます。
 昔は検索と広告の会社だったわけですが、今のGoogleは必ずしもそうではありません。
-そのため、Web上に情報を増やすのを簡単にするためのGoogle App EngineというのはGoogleからすると必ずしも必要ではなくなった気がします。
+そのため、Web上に情報を増やすのを簡単にするためのApp EngineというのはGoogleからすると必ずしも必要ではなくなった気がします。
 
 ### 技術的な歴史
 
-Google App Engine Standardは歴史が長いため、いくつかターニングポイントがあります。
+App Engine Standardは歴史が長いため、いくつかターニングポイントがあります。
 
 1つ目のターニングポイントはThe JRE Class White Listのような制約がなくなり、外への通信も標準の方法でできるようになった瞬間です。
 これは [gVisor](https://github.com/google/gvisor) によってもたらされました。
@@ -48,37 +48,37 @@ Google App Engine Standardは歴史が長いため、いくつかターニング
 gVisorはアプリケーションをサンドボックスで区切り、それぞれの環境の外に悪影響を与えないようにすることができます。
 
 2つ目のターニングポイントはPlatformとして一度限界を迎えたことで起こりました。
-多くの独自APIを持っていましたが、これらはGoogle App Engineからしか使えなかったため、それ以外のプロダクトを使っている人からすると存在しないものでした。
+多くの独自APIを持っていましたが、これらはApp Engineからしか使えなかったため、それ以外のプロダクトを使っている人からすると存在しないものでした。
 そして、Google Cloudには多くのプロダクトがリリースされていきます。
-Google Compute Engine, Google Kubernetes Engine, Cloud Dataflow, Cloud Functions, Cloud Run...
-自分のコードを動かせるものたちは多くありますが、それらからはGoogle App Engine専用のAPIは呼び出せません。
-IAMも同じProjectのGoogle App Engineから無条件に呼べるだけで、現在のGoogle Cloudの一般的なAPIとは親和性はありません。
+Compute Engine, Google Kubernetes Engine, Dataflow, Cloud Functions, Cloud Run...
+自分のコードを動かせるものたちは多くありますが、それらからはApp Engine専用のAPIは呼び出せません。
+IAMも同じProjectのApp Engineから無条件に呼べるだけで、現在のGoogle Cloudの一般的なAPIとは親和性はありません。
 
 Googleからすると運用が必要だけど、使う人は増えないプロダクトたち・・・という状態になってしまったので、一度区切りが付けられようとしました。
-各Runtimeの特定Version以上は2nd genとして、Google App Engine固有のAPIは使えないとされました。
+各Runtimeの特定Version以上は2nd genとして、App Engine固有のAPIは使えないとされました。
 しかし、これは既存のユーザには非常に厳しいものでした。
-Google App Engine固有のAPIを本気出せば別の何かに置き換えれるかもしれませんが、かなりの労力が必要になります。
+App Engine固有のAPIを本気出せば別の何かに置き換えれるかもしれませんが、かなりの労力が必要になります。
 運用はしているが開発はもうしてないようなサービスだとなかなか大変です。
 
-というわけで、結局、この世界線は消えて、2nd genでもGoogle App Engine固有のAPIは使えるようになりました。
-中々の大混乱があったので、[Document上は今でも2nd genではGoogle App Engine固有のAPIが使えない雰囲気](https://cloud.google.com/appengine/docs/standard/runtimes?hl=en) になっています。
+というわけで、結局、この世界線は消えて、2nd genでもApp Engine固有のAPIは使えるようになりました。
+中々の大混乱があったので、[Document上は今でも2nd genではApp Engine固有のAPIが使えない雰囲気](https://cloud.google.com/appengine/docs/standard/runtimes?hl=en) になっています。
 apstndbさんの [ポエム](https://qiita.com/apstndb/items/314e461aed518a4ad26f) もずいぶん長くなってしまっています。
-ただ、今後はGoogle App Engine固有のAPIにUPDATEは入らないでしょうし、緩やかな死を迎える状態だと思うので、使う場合は消すよーって言われたら、適当に移行できるような形で組み込んでおくと良いと思います。
+ただ、今後はApp Engine固有のAPIにUPDATEは入らないでしょうし、緩やかな死を迎える状態だと思うので、使う場合は消すよーって言われたら、適当に移行できるような形で組み込んでおくと良いと思います。
 
 ちなみに筆者が地味に使いたいのは [Memcache API](https://cloud.google.com/appengine/docs/standard/services/memcache?tab=go) です。
 これはKey Value Storeのシンプルなキャッシュなのですが、Shared Memcacheなら指定したExpireより前に消えてしまうことはあるけど、お値段が無料というのが大きな魅力でした。
 
 ### 現在
 
-これから新しくGoogle App Engineを使うなら、少なくともGoogle App Engine固有のAPIは使わない方が良いでしょう。
+これから新しくApp Engineを使うなら、少なくともApp Engine固有のAPIは使わない方が良いでしょう。
 使う場合は移行することを常に意識してコードを組んでおくのが良いと思います。
-また、上記のような歴史があるので、Google App Engineの古い記事は参考にならないと言うか、参考にするには歴史的経緯を含めた知識が要求される状態になっているため、注意しましょう。
+また、上記のような歴史があるので、App Engineの古い記事は参考にならないと言うか、参考にするには歴史的経緯を含めた知識が要求される状態になっているため、注意しましょう。
 
-## Google App Engine Flexible Environment
+## App Engine Flexible Environment
 
-Flexible EnvironmentはVM上でGoogle App EngineのContainerを動作させるプロダクトです。
+Flexible EnvironmentはVM上でApp EngineのContainerを動作させるプロダクトです。
 元々用意されているRuntimeを使うこともできますが、任意のDockerfileを動かすことも可能です。
-VersioningなどStandard Environmentと同様の機能もありますが、VMなのでSpinupが1minほどかかるし、Google App Engine固有のAPIは使えないので、微妙になんとも言い難いプロダクトでした。
+VersioningなどStandard Environmentと同様の機能もありますが、VMなのでSpinupが1minほどかかるし、App Engine固有のAPIは使えないので、微妙になんとも言い難いプロダクトでした。
 
 ### 技術的な歴史
 
@@ -96,7 +96,7 @@ Standard Environmentの制約の多くがなくなり、Containerを動かすな
 
 Serverlessという言葉が流行り始めて、Function as a Serviceが流行った時に誕生しました。
 1 Functionにつき1つDeployするので、これでアプリケーションを作るというよりは、画像がアップロードされたらサムネイルを作るといった何かをトリガーして1つだけ処理を行う時に使います。
-リリース当初は元々Google App Engineがあるので、Cloud Function使う理由ってあんまりないんじゃ・・・？と思ったりしていましたが、シンプルなプロダクトではありました。
+リリース当初は元々App Engineがあるので、Cloud Function使う理由ってあんまりないんじゃ・・・？と思ったりしていましたが、シンプルなプロダクトではありました。
 
 ### 現在
 
@@ -122,12 +122,12 @@ Event Triggerも1st gen時代はCloud Function専用に用意されていまし�
 
 ## Cloud Run
 
-Google App Engine Standard, Flexible Environment, Cloud Functions...と歴史を重ねて最終的に出てきたのがCloud Runです。
+App Engine Standard, Flexible Environment, Cloud Functions...と歴史を重ねて最終的に出てきたのがCloud Runです。
 HTTP Requestを受け取る任意のContainer ImageをDeployして動かすことができます。
 もう全部こいつでいいんじゃ？と思えるほどのポテンシャルを秘めており、機能追加も盛んなプロダクトになっています。
 
-Google App EngineはWebアプリケーションのためのプラットフォームでしたが、Cloud RunはGoogle Cloudで現在のServerlessプロダクトを作るとしたら、こうなるだろうという感じのプロダクトです。
-[gRPC](https://cloud.google.com/run/docs/triggering/grpc) や [Web Socket](https://cloud.google.com/run/docs/triggering/websockets) など、Google App Engine Standard Environmentで期待されたけど、実現できなかった機能が搭載されており、現代の技術でもう一回Serverlssプロダクトを作った感じがあります。
+App EngineはWebアプリケーションのためのプラットフォームでしたが、Cloud RunはGoogle Cloudで現在のServerlessプロダクトを作るとしたら、こうなるだろうという感じのプロダクトです。
+[gRPC](https://cloud.google.com/run/docs/triggering/grpc) や [Web Socket](https://cloud.google.com/run/docs/triggering/websockets) など、App Engine Standard Environmentで期待されたけど、実現できなかった機能が搭載されており、現代の技術でもう一回Serverlssプロダクトを作った感じがあります。
 
 ### 現在
 
@@ -141,10 +141,10 @@ Google App EngineはWebアプリケーションのためのプラットフォー
 役割分けされているServerlessプロダクトたちですが、裏の仕組みは整理され、統合されていってる気配があります。
 Containerを動かすというところは同じになっているので、 [buildpacks](https://github.com/GoogleCloudPlatform/buildpacks) で各プロダクトのContainer Imageを作るようになっています。
 仕組みが整備されたことで、Runtimeの更新が早くなりました。
-Google App Engineも各Runtimeの新しいVersionに対応するのに昔は年単位でかかっていましたが、最近は早くなりました。
+App Engineも各Runtimeの新しいVersionに対応するのに昔は年単位でかかっていましたが、最近は早くなりました。
 
-Google App Engine Standardの1st gen, 2nd genとCloud Functions, Cloud Runの1st gen, 2nd genは内容が異なります。
-Google App Engine Standardは2nd genが主にgVisorですが、Cloud FunctionsとCloud Runは1st genがgVisorです。([Cloud Run](https://cloud.google.com/run/docs/container-contract), [Cloud Functions](https://cloud.google.com/functions/docs/securing?hl=ja#isolation_and_sandboxing))
+App Engine Standardの1st gen, 2nd genとCloud Functions, Cloud Runの1st gen, 2nd genは内容が異なります。
+App Engine Standardは2nd genが主にgVisorですが、Cloud FunctionsとCloud Runは1st genがgVisorです。([Cloud Run](https://cloud.google.com/run/docs/container-contract), [Cloud Functions](https://cloud.google.com/functions/docs/securing?hl=ja#isolation_and_sandboxing))
 リリース時期などを考えるとApp Engine Standard 2nd genと似た仕組みで動いていたのではないかと思います。
 gVisorの場合、spinupは早くて良いのですが、Linuxと完全な互換性はないため、なんでも動くわけでは有りません。([gVisor syscall 互換性リファレンス](https://gvisor.dev/docs/user_guide/compatibility/linux/amd64/))
 Cloud Run gen2はgVisorがなくなり、Linuxとの完全な互換性を持っています。
@@ -154,10 +154,10 @@ max concurrent requestも2以上を指定できるようになっているので
 
 |  | 1st gen | 2nd gen |
 | ---- | ---- | ---- |
-| Google App Engine Standard | 謎 | gVisor |
+| App Engine Standard | 謎 | gVisor |
 | Cloud Functions | gVisor | VM |
 | Cloud Run | gVisor | VM |
 
 長時間処理を行うための [Cloud Run Jobs](https://cloud.google.com/run/docs/execute/jobs) が登場したりと、まだ、Serverlessプロダクトには多くのことが求められています。
-Google App EngineはWebのためのものでしたが、Cloud RunはContainerになってたらなんでも乗せたい人類の夢が集められてますね。
+App EngineはWebのためのものでしたが、Cloud RunはContainerになってたらなんでも乗せたい人類の夢が集められてますね。
 今後のアップデートにも期待しましょう。
