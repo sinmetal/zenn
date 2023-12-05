@@ -4,6 +4,7 @@ emoji: "♥"
 type: "tech" # tech: 技術記事 / idea: アイデア
 topics: ["gcp"]
 published: true
+publication_name: "google_cloud_jp"
 ---
 
 [Google Cloud Champion Innovators Advent Calendar 2023](https://adventar.org/calendars/9217) の1日目の記事です。
