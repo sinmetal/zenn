@@ -10,7 +10,7 @@ published: true
 
 Advent Calendarの初日ということもあり、筆者がなぜGoogle Cloudが好きなのかについて。
 
-筆者が初めてGoogle Cloudに出会ったのは2011年で、 [Google App Engine](https://cloud.google.com/appengine) に恋い焦がれてから、ずっとGoogle Cloudを使い続けています。
+筆者が初めてGoogle Cloudに出会ったのは2011年で、 [App Engine](https://cloud.google.com/appengine) に恋い焦がれてから、ずっとGoogle Cloudを使い続けています。
 現在、仕事ではかなり大きなシステムをGoogle Cloudで扱っていますが、個人で小さなシステムを作るのも好きです。
 そんな小さなシステムから大きなシステムまで作れるところも魅力に感じています。
 この記事では個人でよく作っている小さなシステムに注力しています。
@@ -23,7 +23,7 @@ Advent Calendarの初日ということもあり、筆者がなぜGoogle Cloud�
 Datacenter as a Computerを体現していて、好きなサービスがCloud RunとBigQueryです。
 この2つはまさに使う時だけ瞬間的にリソースを使えるサービスです。
 個人で小さなシステムを作る時もこの2つはよく使います。
-この2つに加えて、データベースとしてCloud Firestoreを加えた3つを個人開発ではよく使っています。
+この2つに加えて、データベースとしてFirestoreを加えた3つを個人開発ではよく使っています。
 
 ## [Cloud Run](https://cloud.google.com/run)
 
@@ -35,7 +35,7 @@ Cloud RunはHTTP Requestを受け取る任意のContainer ImageをDeployして�
 Cloud Runでシステムを構築する場合、Containerを起動してからHTTP Requestを受け取れる状態になるまでの時間を短くすることを考える必要があります。
 これはCloud RunがHTTP Requestが来てから、Containerを起動するため、Requestを送った人はその間待つことになるからです。
 最小Instance台数を指定して常時1台Instanceを起動しておくこともできますが、アクセスが無い時も常時起動することになるので、お金がかかるし、スケールアウトして2台目のInstanceが起動する時に同じ問題に当たるため、軽減することしかできません。
-筆者はGoogle App Engineを使っている頃から長い間、起動時間を短くすることを考えて生きています。
+筆者はApp Engineを使っている頃から長い間、起動時間を短くすることを考えて生きています。
 現在はGo言語を使ってアプリケーションを作成して、小さなContainer Imageを作ることで、なるべく早く起動するようにしています。
 Webフレームワークを使う場合も軽量で起動が早いかどうかを気にしています。
 Dockerfileも3行しか無い短いものです。
@@ -72,13 +72,13 @@ HTTP Requestが来ない状態がしばらく続くとInstanceはshutdownされ�
 | 常時割当 | $0.00001800 / vCPU 秒 毎月 240,000 vCPU 秒無料 | $0.00000200 / GiB 秒 毎月 450,000 GiB 秒まで無料 |
 | Request処理時のみ割当 | $0.00002400 / vCPU 秒 毎月 180,000 vCPU 秒まで無料 | $0.00000250 / GiB 秒 毎月 360,000 GiB 秒まで無料 |
 
-## [Cloud Firestore](https://cloud.google.com/firestore)
+## [Firestore](https://cloud.google.com/firestore)
 
-Cloud FirestoreはKeyValueStore型のDBです。
+FirestoreはKeyValueStore型のDBです。
 Instanceという概念がなく、Read Write1回辺りいくらという料金体系です。
 大規模システムで凄まじい数のRWを行うと料金も大規模になりますが、個人で使う分には無料枠内で生きていけます。
 
-Cloud FirestoreにはNative ModeとDatastore Modeの2つがあります。
+FirestoreにはNative ModeとDatastore Modeの2つがあります。
 Native Modeは元々Mobile Backend as a ServiceとしてのFirebaseに備わっていたFirebase Realtime DBの流れを汲みGoogle Cloudで作られたプロダクトです。
 ブラウザやAndroid, iOSなどのクライアントアプリと直接やり取りする機能があったり、リアルタイムに更新されたデータを取得する機能があります。
 
@@ -137,7 +137,7 @@ BigQueryのように、まさしくDatacenter as a Computerというものもあ
 ### 好きなプロダクト
 
 * Cloud Run
-* Cloud Firestore
+* Firestore
 * Cloud Spanner
 * BigQuery
 
@@ -146,7 +146,7 @@ BigQueryのように、まさしくDatacenter as a Computerというものもあ
 * Cloud SQL
 * Cloud Composer
 
-[Alloy DB](https://cloud.google.com/alloydb) のように最近出てきて様子を伺っているものもありますし、Cloud StorageやCloud Monitoringのように空気のように使うプロダクトもあります。
+[AlloyDB](https://cloud.google.com/alloydb) のように最近出てきて様子を伺っているものもありますし、Cloud StorageやCloud Monitoringのように空気のように使うプロダクトもあります。
 
 既存のプロダクトも機能がどんどん増えています。
 様々な人が色んなユースケースで使うようになっているので、それに対応するように機能がリリースされています。
@@ -158,6 +158,6 @@ BigQueryのように、まさしくDatacenter as a Computerというものもあ
 
 Google Cloudのプロダクトが増えるに連れ、利用者も様々な人が増えました。
 筆者が普段使わないプロダクトを使う人たちもたくさんいます。
-[Google Compute Engine](https://cloud.google.com/compute) でVMをごりごり動かしている人、 [Google Kubernetes Engine](https://cloud.google.com/kubernetes-engine) でContainerを動かしている人、 [Dataflow](https://cloud.google.com/dataflow) でビッグデータを処理している人、 [Vertex AI](https://cloud.google.com/vertex-ai) で機械学習をしている人・・・。
-昔々、Google App Engineしか無かった頃と比べて、本当に色んな人たちがいます。
+[Compute Engine](https://cloud.google.com/compute) でVMをごりごり動かしている人、 [Google Kubernetes Engine](https://cloud.google.com/kubernetes-engine) でContainerを動かしている人、 [Dataflow](https://cloud.google.com/dataflow) でビッグデータを処理している人、 [Vertex AI](https://cloud.google.com/vertex-ai) で機械学習をしている人・・・。
+昔々、App Engineしか無かった頃と比べて、本当に色んな人たちがいます。
 そんな個性豊かなGoogle Cloud Champion Innovatorsが送るAdvent Calendarをお楽しみください。 
