@@ -25,7 +25,7 @@ App EngineはWebアプリケーションのためのPaaSなので、なんだか
 [Static Contents Server](https://cloud.google.com/appengine/docs/standard/serving-static-files?hl=en&tab=go#configuring_your_static_file_handlers) があるため、htmlやcssなどの配信もお任せです。
 [動的に処理したResponseも手軽にキャッシュすることができるため](https://cloud.google.com/appengine/docs/standard/how-requests-are-handled?hl=en&tab=go#response_caching) OGPなどほとんど静的だけど、一部動的に差し込むような場合、作り終えたResponseは全部キャッシュに乗せてしまえば良いので便利です。
 ただ、明示的にキャッシュを消すことはできないので、URLの運用には注意が必要です。
-エッジキャッシュについては [昔少し書いた](https://qiita.com/sinmetal/items/37c105a098174fb6bf77) ので、気になる方は確認してください
+エッジキャッシュについては [昔少し書いた](https://qiita.com/sinmetal/items/37c105a098174fb6bf77) ので、気になる方は確認してください。
 
 ドメインも PROJECT_ID.REGION_ID.r.appspot.com が付与されているので、自分で用意する必要はありません。
 カスタムドメインも設定できるのですが、 [東京リージョン(asia-northeast1)でカスタムドメインを設定すると、むしろus-central1にDeployするより遅くなってしまう](https://cloud.google.com/appengine/docs/standard/mapping-custom-domains?hl=en) ことに注意です。
@@ -33,7 +33,7 @@ App EngineはWebアプリケーションのためのPaaSなので、なんだか
 
 特定のGoogle WorkspaceのDomainや、Google Groupに所属している人だけにWebアプリケーションを見せたい時に [Identity-Aware Proxy](https://cloud.google.com/iap) で簡単に覆えるのも便利です。
 
-App Engineの問題としては独自要素が多く、App Engine固有の知識が必要になります。
+App Engineを使う上でのハードルとしては独自要素が多く、App Engine固有の知識が必要になります。
 知識を持っている人間も徐々に減っており、App Engineの状況を完全に把握するには歴史を紐解く必要があります。
 
 Scaling Configも独自仕様なので、ノリを理解するのが大変かもしれません。
@@ -51,6 +51,6 @@ LBは構築するコンポーネントが多いので、慣れるまでは理解
 
 LBを前に置けば [AppEngineにCustom Domain設定時にLatencyが増加する問題](https://cloud.google.com/appengine/docs/standard/mapping-custom-domains?hl=en) もありませんし、 [Cloud CDN](https://cloud.google.com/cdn/docs/overview) や[Cloud Armor](https://cloud.google.com/armor/docs/cloud-armor-overview) , [Identity-Aware Proxy](https://cloud.google.com/iap) も使えます。
 
-
+![](/images/mini-system-architecture/global-external-application-lb.png)
 
 ## 長時間かかる処理を行うパターン
