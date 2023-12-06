@@ -6,6 +6,8 @@ topics: ["gcp"]
 published: true
 ---
 
+[Google Cloud Champion Innovators Advent Calendar 2023](https://adventar.org/calendars/9217) の6日目の記事です。
+
 sinmetalから見たGoogle Cloud Serverless Productたちの歴史と現状を振り返ります。
 
 ## リリース順
