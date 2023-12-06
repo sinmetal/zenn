@@ -3,7 +3,7 @@ title: "Google Cloud Serverless Product History"
 emoji: "🐕"
 type: "tech" # tech: 技術記事 / idea: アイデア
 topics: ["gcp"]
-published: false
+published: true
 ---
 
 sinmetalから見たGoogle Cloud Serverless Productたちの歴史と現状を振り返ります。
