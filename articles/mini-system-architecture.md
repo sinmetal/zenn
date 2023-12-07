@@ -54,3 +54,27 @@ LBを前に置けば [AppEngineにCustom Domain設定時にLatencyが増加す�
 ![](/images/mini-system-architecture/global-external-application-lb.png)
 
 ## 長時間かかる処理を行うパターン
+
+いずれの構成を使ったとしても長時間かかる処理はアーキテクチャを考える必要があります。
+長時間かかる処理の中でよくある2つのパターンについて考えてみます。
+
+### サーバ側の処理に時間がかかるパターン
+
+リクエストされてから、サーバ側で処理が始まり、時間がかかるパターンです。
+この場合、処理を開始するリクエストとレスポンスを貰うリクエストを分けます。
+処理を開始するリクエストではJobIDを受け取り、Jobの完了までポーリングして待ちます。
+Google CloudのAPIでもこの形式はよく見ます。
+例えばCompute Engineはリソースの操作に時間がかかるので、レスポンスとしてOperationというものが返ってきて、Operationの状態を取得することで、結果が分かります。
+
+* https://cloud.google.com/compute/docs/reference/rest/v1/instances/start
+* https://cloud.google.com/compute/docs/reference/rest/v1/zoneOperations
+* https://cloud.google.com/compute/docs/reference/rest/v1/zoneOperations/get
+
+BigQueryも同じような感じですね。
+Queryを実行するとJobが返ってきて、Job
+
+* https://cloud.google.com/bigquery/docs/reference/rest/v2/jobs/query
+* https://cloud.google.com/bigquery/docs/reference/rest/v2/jobs/get
+* https://cloud.google.com/bigquery/docs/reference/rest/v2/jobs/getQueryResults
+
+![](/images/mini-system-architecture/async-worker.png)
