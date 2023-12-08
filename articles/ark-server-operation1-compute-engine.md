@@ -9,7 +9,9 @@ published: false
 筆者が友人数人とマルチプレイで遊んでいる [ARK: Survival Ascended](https://store.steampowered.com/app/2399830/ARK_Survival_Ascended/?l=japanese) (以下ASA) のサーバの構築運用記です。
 ARKのサーバとしては少々特殊で、誰かが遊んでいる時しか起動していないサーバになります。
 サーバ自身はCompute Engineで動かしていますが、起動と停止はCloud Runで行っていたりと、Google Cloudのいくつかのプロダクトを使っています。
-同じことをしたい人はあまりいないとは思いますが、どのような構成になっているかを記しておきます。
+同じことをしたい方はあまりいないとは思いますが、どのような構成になっているかを記しておきます。
+使っている機能についてはある程度、公式ドキュメントへのLinkを貼っていますが、細かくは説明してないので、Google Cloudをある程度は知っている人向けの内容です。
+
 長くなるので、いくつかのレイヤーに分けて記事を書いていこうと思います。
 この記事は1つ目です。
 
@@ -21,12 +23,17 @@ ARKのサーバとしては少々特殊で、誰かが遊んでいる時しか�
 
 まずはCompute EngineのInstanceで利用するService Accountを作ります。
 Defaultで用意されているCompute Engine Default Service Account使っても良いのですが、自分はあのService Accountを使うのはあまり好きではないので、個別に作ります。
-[Service Accountの運用について](https://github.com/gcpug/nouhau/tree/master/general/note/destroy-service-account-key)
+興味がある方は [Service Accountの運用について](https://github.com/gcpug/nouhau/tree/master/general/note/destroy-service-account-key) を読むとService Accountへの理解が深まります。
 
 RoleとしてCloud StorageへのアクセスやOperation SuiteへのWriteを付けておきます。
-Cloud StorageへのアクセスはBucketごとに真面目に設定した方が本当は良いですが、適当にProject Levelで付けてます。
+Cloud StorageへのアクセスはBucketごとに真面目に設定した方が本当は良いですが、横着してProject Levelで付けてます。
+[Cloud SDK](https://cloud.google.com/sdk) がマシンに入っている場合はLocalで実行すれば良いですが、入ってない場合は [Cloud Shell](https://cloud.google.com/shell) で実行するのが楽です。
 
+```shell:PROJECT_IDの設定
+export GOOGLE_CLOUD_PROJECT={YOUR_PROJECT_ID}
 ```
+
+``` shell:Service Accountの作成とRoleの付与
 gcloud iam service-accounts create ark-server --description="ARK Server Worker" --display-name="ark-server"
 gcloud projects add-iam-policy-binding $GOOGLE_CLOUD_PROJECT --member=serviceAccount:ark-server@$GOOGLE_CLOUD_PROJECT.iam.gserviceaccount.com --role=roles/storage.admin
 gcloud projects add-iam-policy-binding $GOOGLE_CLOUD_PROJECT --member=serviceAccount:ark-server@$GOOGLE_CLOUD_PROJECT.iam.gserviceaccount.com --role=roles/logging.logWriter
@@ -34,12 +41,11 @@ gcloud projects add-iam-policy-binding $GOOGLE_CLOUD_PROJECT --member=serviceAcc
 ```
 
 Service Accountが作れたら、Instanceを作ります。
-ASAはメモリが16GB弱使うのでマシンタイプは `e2-highmem-2` を使い、Diskは50GBのBalanced Persistent Diskを使っています。
-それ以外はほぼdefaultのままです。
+ASAはメモリを16GB弱使うのでマシンタイプは `e2-highmem-2` を使い、Diskは50GBのBalanced Persistent Diskを使っています。
+CPU利用率もメモリ利用率80%ほどになります。
+CPUのコアを増やせば、サーバの動きが軽くなったりするかと思って試してみたのですが、コアを増やしても使われていないようだったので、 `e2-highmem-2` にしています。
 
-```
-export GOOGLE_CLOUD_PROJECT=metal-ark-sample-20231207
-
+``` shell:Instanceの作成コマンド
 gcloud compute instances create asa-island \
     --project=$GOOGLE_CLOUD_PROJECT \
     --zone=asia-northeast1-b \
@@ -61,11 +67,10 @@ gcloud compute instances create asa-island \
 
 ARKのServer ApplicationのInstallは　https://github.com/cdp1337/ARKSurvivalAscended-Linux を参考にしています。
 実行すればInstallが完了するshellを用意してくれているので、これを使ってInstallします。
-ただ、Install後いくつか変えている部分があります。
+ただ、Install後に修正を加えています。
+`GameUserSettings.ini` のシンボリックリンクが貼られているのですが、自分はサーバ上で編集するのではなく、GitHub上で管理してアップロードするので、シンボリックリンクは不要です。
 
-`GameUserSettings.ini` のシンボリックリンクが貼られているのですが、自分はサーバ上で編集するのではなく、GitHub上で管理したいので、外からアップロードするので、シンボリックリンクは削除します。
-
-```
+``` shell:シンボリックリンクの削除 (Compute Engine上で実行)
 sudo unlink /home/steam/island-GameUserSettings.ini
 ```
 
@@ -79,28 +84,24 @@ ARKでは `GameUserSettings.ini` と `Game.ini` の2つの設定ファイルが�
 * Port=7805
 * QueryPort=27030
 
-ファイルが作成できたら、Cloud Storageにアップロードしておきます。
+設定ファイルが作成できたら、Cloud Storageにアップロードしておきます。
 筆者はGitHubで管理しているので、 [Cloud Build Trigger](https://cloud.google.com/build/docs/triggers) を利用して、BranchがPushされたら、Cloud Storageにアップロードするようにしています。
 
-Bucketの作成
-
-```
+``` shell:設定ファイル用Bucketの作成
 gcloud storage buckets create gs://metal-ark-sample-config -l asia-northeast1
 ```
 
-ファイルのアップロード
-
-```
-gcloud storage cp GameUserSettings.ini gs://metal-ark-sample-20231207-config/island/GameUserSettings.ini
-gcloud storage cp Game.ini gs://metal-ark-sample-20231207-config/island/Game.ini
+``` shell:設定ファイルをCloud Storageにアップロード
+gcloud storage cp GameUserSettings.ini gs://metal-ark-sample-config/island/GameUserSettings.ini
+gcloud storage cp Game.ini gs://metal-ark-sample-config/island/Game.ini
 ```
 
 以下は筆者の設定ファイルのサンプルです。
 参考程度にどうぞ。
 もし真似する場合は以下の2つは必ず変更が必要です。
 
-* `SessionName=asa-sample-island2` : Server検索時に出てくる名前なので、好きな名前に変更します。
-* `ServerAdminPassword=xxxxxxxx` : 管理者コマンド用パスワードなので、好きな値に変更します。
+* `SessionName=asa-sample-island` : Server検索時に表示される名前
+* `ServerAdminPassword=xxxxxxxx` : 管理者コマンド用パスワード
 
 :::details GameUserSettings.ini
 
@@ -428,7 +429,7 @@ HDRDisplayOutputNits=1000
 bUseDesiredScreenHeight=False
 
 [SessionSettings]
-SessionName=asa-sample-island2
+SessionName=asa-sample-island
 Port=7805
 QueryPort=27030
 
@@ -456,26 +457,15 @@ bAllowUnlimitedRespecs=True
 
 ### Startup Scriptの設定
 
-Instanceの再起動時に設定ファイルを取り込みたいので、 [Startup Scritp](https://cloud.google.com/compute/docs/instances/startup-scripts/linux) を設定します。
+Instanceの起動時に設定ファイルの取り込みとASA Serverの起動がしたいので、 [Startup Scritp](https://cloud.google.com/compute/docs/instances/startup-scripts/linux) を設定します。
 Startup Scriptは [Instanceのメタデータ](https://cloud.google.com/compute/docs/metadata/overview) として、指定されたKeyを入れるとInstance起動時にshellを実行できる機能です。
 メタデータ自体にshellの内容を全部書き込むパターンと、Cloud StorageのURLを書いて、そこにshellを置くパターンがあります。
-筆者は更新が簡単なので、Cloud StorageにURLを書く方をよく使います。
+筆者は更新が簡単なので、Cloud StorageのURLを書く方をよく使います。
 
-Startup Scriptを置くBucketの作成
+Startup Scriptの中身はCloud Storageから設定ファイルをLocalにCopyし、ASA Serverを起動します。
 
-```
-gcloud storage buckets create gs://metal-ark-sample-shell -l asia-northeast1
-```
 
-```
-gcloud storage cp startup.sh gs://metal-ark-sample-20231207-shell/island/startup.sh
-```
-
-startup.sh
-
-Cloud Storageから2つの設定ファイルをコピーした後、サーバを起動します。
-
-```
+```shell:startup.sh
 #!/bin/bash
 
 STEAMDIR="/home/steam/.local/share/Steam"
@@ -484,9 +474,17 @@ sudo -u steam gcloud storage cp gs://metal-ark-sample-config/island/Game.ini "$S
 sudo systemctl start ark-island
 ```
 
+```shell:Startup Scriptを置くBucketの作成
+gcloud storage buckets create gs://metal-ark-sample-shell -l asia-northeast1
 ```
-gcloud compute instances add-metadata asa-island --project metal-ark-sample-20231207 --zone asia-northeast1-b \
-  --metadata=startup-script-url=gs://metal-ark-sample-20231207-shell/island/startup.sh
+
+```shell:Startup ScriptをCloud Storageにアップロード
+gcloud storage cp startup.sh gs://metal-ark-sample-shell/island/startup.sh
+```
+
+```shell:InstanceのmetadataにStartup Scriptを設定
+gcloud compute instances add-metadata asa-island --project $GOOGLE_CLOUD_PROJECT --zone asia-northeast1-b \
+  --metadata=startup-script-url=gs://metal-ark-sample-shell/island/startup.sh
 ```
 
 ## Firewall設定
@@ -496,13 +494,13 @@ Firewallの設定を行います。
 `GameUserSettings.ini` で指定したPort以外も開けないといけないPortがあるようで、いくつか設定しています。
 必要最小限のPortという意味ではもっと少ない気がしているのですが、今はひとまずこの設定にしています。
 
-```
-gcloud compute --project=metal-ark-sample-20231207 firewall-rules create default-allow-ark --direction=INGRESS --priority=1000 --network=default --action=ALLOW --rules=tcp:7777-7805,tcp:27030,udp:7777-7805,udp:27030 --source-ranges=0.0.0.0/0 --target-tags=ark
+```shell:ARK用Firewall Rule作成
+gcloud compute --project=$GOOGLE_CLOUD_PROJECT firewall-rules create default-allow-ark --direction=INGRESS --priority=1000 --network=default --action=ALLOW --rules=tcp:7777-7805,tcp:27030,udp:7777-7805,udp:27030 --source-ranges=0.0.0.0/0 --target-tags=ark
 ```
 
-```
+```shell:Instanceにtagを追加
 gcloud compute instances add-tags asa-island \
-  --project=metal-ark-sample-20231207 \
+  --project=$GOOGLE_CLOUD_PROJECT \
   --zone asia-northeast1-b \
   --tags ark
 ```
@@ -513,9 +511,9 @@ ARK: Survival Ascendedはアーリーアクセスということもあり、何�
 不足の事態に備え、日次でスナップショットを取っています。
 UTCで指定するのでJSTのAM07:00である22:00にしています。
 
-```
+```shell:Snapshot Scheduleを作成
 gcloud compute resource-policies create snapshot-schedule schedule-daily \
-    --project=metal-ark-sample-20231207 \
+    --project=$GOOGLE_CLOUD_PROJECT \
     --region=asia-northeast1 \
     --max-retention-days=30 \
     --on-source-disk-delete=apply-retention-policy \
@@ -524,16 +522,16 @@ gcloud compute resource-policies create snapshot-schedule schedule-daily \
     --storage-location=asia-northeast1
 ```
 
-```
+```shell:DiskにSnaphost Scheduleを設定
 gcloud compute disks add-resource-policies asa-island \
     --resource-policies schedule-daily \
-    --project=metal-ark-sample-20231207 \
+    --project=$GOOGLE_CLOUD_PROJECT \
     --zone asia-northeast1-b
 ```
 
 ## 余談
 
 コスト最適化を考えるともう少し改善する余地があると思っていますが、ひとまずこのぐらいで良いだろうと思っています。
-やるとしたら、DiskはOSとASAが同じものに入っていて、まるごとスナップショットを作成しています。
+後、やるとしたら、DiskはOSとASAが同じものに入っていて、まるごとスナップショットを作成しています。
 OSの部分は必ずしも必要なものではないので、Diskを2つに分けてASA部分だけスナップショットを作成した方がコンパクトにはできるかもしれません。
-ただ、Diskのスナップショットは差分だけが作られるので、毎日作成していたとしても、そこまで大きくはなりません。
+ただ、Diskのスナップショットは差分だけが作られるので、毎日作成していたとしても、そこまで大きくはならないため、ひとまずやっていません。
