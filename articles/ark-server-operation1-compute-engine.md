@@ -102,9 +102,9 @@ gcloud storage cp Game.ini gs://metal-ark-sample-20231207-config/island/Game.ini
 * `SessionName=asa-sample-island2` : Server検索時に出てくる名前なので、好きな名前に変更します。
 * `ServerAdminPassword=xxxxxxxx` : 管理者コマンド用パスワードなので、好きな値に変更します。
 
-GameUserSettings.ini
+:::details GameUserSettings.ini
 
-```
+``` ini:GameUserSettings.ini
 [ServerSettings]
 ServerAdminPassword=xxxxxxxx
 ServerPVE=True
@@ -436,10 +436,11 @@ QueryPort=27030
 MaxPlayers=70
 ```
 
+:::
 
-Game.ini
+:::details Game.ini
 
-```
+``` ini:Game.ini
 [/script/shootergame.shootergamemode]
 MatingIntervalMultiplier=0.25
 BabyMatureSpeedMultiplier=4.0
@@ -450,6 +451,8 @@ FuelConsumptionIntervalMultiplier=1.25
 bPvEDisableFriendlyFire=True
 bAllowUnlimitedRespecs=True
 ```
+
+:::
 
 ### Startup Scriptの設定
 
@@ -488,6 +491,11 @@ gcloud compute instances add-metadata asa-island --project metal-ark-sample-2023
 
 ## Firewall設定
 
+Firewallの設定を行います。
+`GameUserSettings.ini` で指定したPortを `ark` tagを付けたInstanceには通すようにします。
+`GameUserSettings.ini` で指定したPort以外も開けないといけないPortがあるようで、いくつか設定しています。
+必要最小限のPortという意味ではもっと少ない気がしているのですが、今はひとまずこの設定にしています。
+
 ```
 gcloud compute --project=metal-ark-sample-20231207 firewall-rules create default-allow-ark --direction=INGRESS --priority=1000 --network=default --action=ALLOW --rules=tcp:7777-7805,tcp:27030,udp:7777-7805,udp:27030 --source-ranges=0.0.0.0/0 --target-tags=ark
 ```
@@ -501,6 +509,10 @@ gcloud compute instances add-tags asa-island \
 
 ## Scheduled Snapshotの設定
 
+ARK: Survival Ascendedはアーリーアクセスということもあり、何が起こるか分かりません。
+不足の事態に備え、日次でスナップショットを取っています。
+UTCで指定するのでJSTのAM07:00である22:00にしています。
+
 ```
 gcloud compute resource-policies create snapshot-schedule schedule-daily \
     --project=metal-ark-sample-20231207 \
@@ -511,3 +523,17 @@ gcloud compute resource-policies create snapshot-schedule schedule-daily \
     --start-time=22:00 \
     --storage-location=asia-northeast1
 ```
+
+```
+gcloud compute disks add-resource-policies asa-island \
+    --resource-policies schedule-daily \
+    --project=metal-ark-sample-20231207 \
+    --zone asia-northeast1-b
+```
+
+## 余談
+
+コスト最適化を考えるともう少し改善する余地があると思っていますが、ひとまずこのぐらいで良いだろうと思っています。
+やるとしたら、ディスクはOSとASAが同じものに入っていて、まるごとスナップショットを作成しています。
+OSの部分は必ずしも必要なものではないので、Diskを2つに分けてASA部分だけスナップショットを作成した方がコンパクトにはできるかもしれません。
+ただ、ディスクのスナップショットは差分だけが作られるので、毎日作成していたとしても、そこまで大きくはなりません。
