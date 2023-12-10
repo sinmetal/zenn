@@ -56,6 +56,7 @@ LBを前に置けば [AppEngineにCustom Domain設定時にLatencyが増加す�
 ## 長時間かかる処理を行うパターン
 
 いずれの構成を使ったとしても長時間かかる処理はアーキテクチャを考える必要があります。
+サーバーレスプロダクトはタイムアウトの時間がそんなに長くないものが多いので、
 長時間かかる処理の中でよくある2つのパターンについて考えてみます。
 
 ### サーバ側の処理に時間がかかるパターン
@@ -71,10 +72,26 @@ Google CloudのAPIでもこの形式はよく見ます。
 * https://cloud.google.com/compute/docs/reference/rest/v1/zoneOperations/get
 
 BigQueryも同じような感じですね。
-Queryを実行するとJobが返ってきて、Job
+Queryを実行するとJobが返ってきて、Jobを取得することで、Queryの結果を後で知ります。
 
 * https://cloud.google.com/bigquery/docs/reference/rest/v2/jobs/query
 * https://cloud.google.com/bigquery/docs/reference/rest/v2/jobs/get
 * https://cloud.google.com/bigquery/docs/reference/rest/v2/jobs/getQueryResults
 
+このように処理を開始するリクエストと、結果を受け取るリクエストを別にすることで効率良くマシンリソースを扱えます。
+
 ![](/images/mini-system-architecture/async-worker.png)
+
+#### 処理を分割する
+
+処理を開始するリクエストと結果を受け取るリクエストを分けたことで、処理を実行するWorkerを分離することができました。
+それにより、選択肢が増えています。
+APIを処理しているCloud RunやApp Engineで同じように実行するもよし、Compute EngineやCloud Build, Dataflowを使うもよし、色んな選択肢があります。
+処理の内容で最適なものが変わるので、好きなものを使いましょう。
+
+この時、分割できる処理なのであれば、分割することで、処理が終わる時間を短くしたり、リトライ範囲を細かくすることができます。
+特にサーバーレスプロダクトは分散するのは得意だけど、長時間処理は苦手だったりするので、分割実行とは相性が良いです。
+
+### レスポンスのダウンロード自体に時間がかかる
+
+CSVやPDFなどレスポンス自体のサイズが大きい場合は、Cloud Storageの [SignedURL](https://cloud.google.com/storage/docs/access-control/signed-urls) を使ってCloud Storageから直接ダウンロードしてもらうのが良いです。
