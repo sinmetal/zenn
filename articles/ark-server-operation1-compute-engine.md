@@ -27,7 +27,8 @@ Defaultで用意されているCompute Engine Default Service Account使って�
 
 RoleとしてCloud StorageへのアクセスやOperation SuiteへのWriteを付けておきます。
 Cloud StorageへのアクセスはBucketごとに真面目に設定した方が本当は良いですが、横着してProject Levelで付けてます。
-[Cloud SDK](https://cloud.google.com/sdk) がマシンに入っている場合はLocalで実行すれば良いですが、入ってない場合は [Cloud Shell](https://cloud.google.com/shell) で実行するのが楽です。
+リソースはWeb UIやTerraformで作っても良いですが、この記事では [Cloud SDK](https://cloud.google.com/sdk) のコマンドで書いています。
+Cloud SDKがマシンに入っている場合はLocalで実行すれば良いですが、入ってない場合は [Cloud Shell](https://cloud.google.com/shell) で実行するのが楽です。
 
 ```shell:PROJECT_IDの設定
 export GOOGLE_CLOUD_PROJECT={YOUR_PROJECT_ID}
@@ -77,15 +78,11 @@ sudo unlink /home/steam/island-GameUserSettings.ini
 ### GameSettings Fileの準備
 
 ARKでは `GameUserSettings.ini` と `Game.ini` の2つの設定ファイルがあるので、どちらも用意します。
-主にゲームバランスに関する設定ですが、いくつかサーバ管理のための値があります。
-以下の2つは後でFirewallの設定をする時に使います。
-設定しなくてもdefaultの値があると思うのですが、筆者はdefaultの値が分からなかったので、明示的に設定しています。
-
-* Port=7805
-* QueryPort=27030
+主にゲームバランスに関する設定ですが、Port番号やサーバリストに表示される名前など、いくつかサーバ管理のための値があります。
 
 設定ファイルが作成できたら、Cloud Storageにアップロードしておきます。
 筆者はGitHubで管理しているので、 [Cloud Build Trigger](https://cloud.google.com/build/docs/triggers) を利用して、BranchがPushされたら、Cloud Storageにアップロードするようにしています。
+以下はLocalで作成した設定ファイルをCloud Storageにアップロードする例です。
 
 ``` shell:設定ファイル用Bucketの作成
 gcloud storage buckets create gs://metal-ark-sample-config -l asia-northeast1
@@ -112,7 +109,7 @@ ServerPVE=True
 ShowMapPlayerLocation=True
 AllowThirdPersonPlayer=True
 ServerCrosshair=True
-RCONPort=27036
+RCONPort=27020
 RCONEnabled=True
 TheMaxStructuresInRange=10500
 StartTimeHour=-1
@@ -126,7 +123,7 @@ StructurePickupHoldDuration=0.5
 AllowHideDamageSourceFromLogs=True
 RaidDinoCharacterFoodDrainMultiplier=1
 PvEDinoDecayPeriodMultiplier=1
-KickIdlePlayersPeriod=7200
+KickIdlePlayersPeriod=3600
 PerPlatformMaxStructuresMultiplier=1
 AutoSavePeriodMinutes=15
 MaxTamedDinos=5000
@@ -430,8 +427,8 @@ bUseDesiredScreenHeight=False
 
 [SessionSettings]
 SessionName=asa-sample-island
-Port=7805
-QueryPort=27030
+Port=7777
+QueryPort=27015
 
 [/Script/Engine.GameSession]
 MaxPlayers=70
@@ -487,15 +484,14 @@ gcloud compute instances add-metadata asa-island --project $GOOGLE_CLOUD_PROJECT
   --metadata=startup-script-url=gs://metal-ark-sample-shell/island/startup.sh
 ```
 
-## Firewall設定
+## Firewall-rule設定
 
-Firewallの設定を行います。
-`GameUserSettings.ini` で指定したPortを `ark` tagを付けたInstanceには通すようにします。
-`GameUserSettings.ini` で指定したPort以外も開けないといけないPortがあるようで、いくつか設定しています。
-必要最小限のPortという意味ではもっと少ない気がしているのですが、今はひとまずこの設定にしています。
+Compute Engineには [Network Tag](https://cloud.google.com/vpc/docs/add-remove-network-tags) という機能があり、InstanceにこのTagを付けることで、Firewallを通す、通さないを制御することができます。
+これを使えば通したい時だけ、通したいInstanceに到達させれるようになるので、筆者は好んで使っています。
+今回は `ark` tagを付けたInstnaceが外から通信できるようにします。
 
 ```shell:ARK用Firewall Rule作成
-gcloud compute --project=$GOOGLE_CLOUD_PROJECT firewall-rules create default-allow-ark --direction=INGRESS --priority=1000 --network=default --action=ALLOW --rules=tcp:7777-7805,tcp:27030,udp:7777-7805,udp:27030 --source-ranges=0.0.0.0/0 --target-tags=ark
+gcloud compute --project=$GOOGLE_CLOUD_PROJECT firewall-rules create default-allow-ark --direction=INGRESS --priority=1000 --network=default --action=ALLOW --rules=udp:7777-7778,udp:27015 --source-ranges=0.0.0.0/0 --target-tags=ark
 ```
 
 ```shell:Instanceにtagを追加
@@ -503,6 +499,21 @@ gcloud compute instances add-tags asa-island \
   --project=$GOOGLE_CLOUD_PROJECT \
   --zone asia-northeast1-b \
   --tags ark
+```
+
+Network構成については [ASAの日本語Wiki](https://wikiwiki.jp/arksa/%E3%82%B5%E3%83%BC%E3%83%90%E3%83%BC) にも書いてくれてる方がいるので、読んでみると良いかもしれません。
+
+以下はARKサーバを動かすために必要な操作ではありませんが、やっておくとよさそうなことです。
+最初から用意されているFirewall-ruleを修正しています。
+ICMP, SSHに関してはtagが付いているInstanceだけ許可。
+Remote Desktopは使わないので、削除しています。
+
+やらなくても困りはしないのですが、ssh portは攻撃されたりして面倒なので、使わない時はFirewallで閉じておくのが無難です。
+
+```shell:Firewall-ruleの調整
+gcloud compute --project=$GOOGLE_CLOUD_PROJECT firewall-rules update default-allow-icmp --target-tags icmp
+gcloud compute --project=$GOOGLE_CLOUD_PROJECT firewall-rules update default-allow-ssh --target-tags ssh
+gcloud compute --project=$GOOGLE_CLOUD_PROJECT firewall-rules delete default-allow-rdp
 ```
 
 ## Scheduled Snapshotの設定
