@@ -3,8 +3,10 @@ title: "ARK: Survival Ascended Server構築記 その1 Compute EngineでServer�
 emoji: "🦖"
 type: "tech" # tech: 技術記事 / idea: アイデア
 topics: ["gcp"]
-published: false
+published: true
 ---
+
+[Google Cloud Champion Innovators Advent Calendar 2023](https://adventar.org/calendars/9217) の10日目の記事です。
 
 筆者が友人数人とマルチプレイで遊んでいる [ARK: Survival Ascended](https://store.steampowered.com/app/2399830/ARK_Survival_Ascended/?l=japanese) (以下ASA) のサーバの構築運用記です。
 ARKのサーバとしては少々特殊で、誰かが遊んでいる時しか起動していないサーバになります。
