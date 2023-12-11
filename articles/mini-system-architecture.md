@@ -29,7 +29,7 @@ App EngineはWebアプリケーションのためのPaaSなので、なんだか
 
 ドメインも PROJECT_ID.REGION_ID.r.appspot.com が付与されているので、自分で用意する必要はありません。
 カスタムドメインも設定できるのですが、 [東京リージョン(asia-northeast1)でカスタムドメインを設定すると、むしろus-central1にDeployするより遅くなってしまう](https://cloud.google.com/appengine/docs/standard/mapping-custom-domains?hl=en) ことに注意です。
-この挙動はなかなかびっくりするもので、Zennでも [昔ハマった](https://zenn.dev/catnose99/articles/56f523d39cca43) みたいですね。
+この挙動はなかなかびっくりするもので、Zennでも [昔ハマった](https://zenn.dev/catnose99/articles/56f523d39cca43) ことがあるようです。
 
 特定のGoogle WorkspaceのDomainや、Google Groupに所属している人だけにWebアプリケーションを見せたい時に [Identity-Aware Proxy](https://cloud.google.com/iap) で簡単に覆えるのも便利です。
 
@@ -47,7 +47,7 @@ Scaling Configも独自仕様なので、ノリを理解するのが大変かも
 Application Load Balancerを一番前に置いて、後ろに各種プロダクトを必要に応じて配置します。
 LBは構築するコンポーネントが多いので、慣れるまでは理解するのが大変かもしれませんが、慣れてしまえば、順番に並べていくだけです。
 この構成は柔軟性が高く、ユースケースに合わせて強力なGoogle Cloudの機能をたくさん利用することができます。
-ちょうど今あなたがこの記事を読んでいるZennもこの構成で作られているみたいです。 ([Zennのバックエンドを Google App Engine から Cloud Run へ移行しました（無停止！YES！）](https://zenn.dev/team_zenn/articles/migrate-appengine-to-cloudrun)
+ちょうど今あなたがこの記事を読んでいるZennもこの構成で作られているようです。 ([Zennのバックエンドを Google App Engine から Cloud Run へ移行しました（無停止！YES！）](https://zenn.dev/team_zenn/articles/migrate-appengine-to-cloudrun)
 
 LBを前に置けば [AppEngineにCustom Domain設定時にLatencyが増加する問題](https://cloud.google.com/appengine/docs/standard/mapping-custom-domains?hl=en) もありませんし、 [Cloud CDN](https://cloud.google.com/cdn/docs/overview) や[Cloud Armor](https://cloud.google.com/armor/docs/cloud-armor-overview) , [Identity-Aware Proxy](https://cloud.google.com/iap) も使えます。
 
