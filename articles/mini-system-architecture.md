@@ -86,11 +86,20 @@ Queryを実行するとJobが返ってきて、Jobを取得することで、Que
 
 処理を開始するリクエストと結果を受け取るリクエストを分けたことで、処理を実行するWorkerを分離することができました。
 それにより、選択肢が増えています。
-APIを処理しているCloud RunやApp Engineで同じように実行するもよし、Compute EngineやCloud Build, Dataflowを使うもよし、色んな選択肢があります。
+Cloud RunやApp Engineで同じように実行するもよし、Compute EngineやCloud Build, Dataflowを使うもよし、色んな選択肢があります。
 処理の内容で最適なものが変わるので、好きなものを使いましょう。
+Cloud RunやApp Engineを使う場合はServiceを分けることも視野に入れると良いです。
+Concurrentlyやマシンスペックなどを調整することができます。
+例えばAPI用のServiceはConcurrentry=80, CPU 1Core, Memory 512MiBで動かしているが、重たい処理が同時リクエストの中に混ざるとメモリが足らなくなるので、Worker用のServieとしてConcurrentry=1, CPU 1Core, Memory 1GiBを用意します。
 
 この時、分割できる処理なのであれば、分割することで、処理が終わる時間を短くしたり、リトライ範囲を細かくすることができます。
 特にサーバーレスプロダクトは分散するのは得意だけど、長時間処理は苦手だったりするので、分割実行とは相性が良いです。
+分割する方法も色々ありますが、Cloud TasksやCloud Pub/Subにタスクを分割して入れて、発火するのが楽です。
+例えば1年分の売上データのCSVを作りたい時にCloud Tasksに1月担当のタスク、2月担当のタスク・・・という感じで入れていきます。
+そうすれば、12分割されて実行できます。
+できあがった12このCSVを [Composite objects](https://cloud.google.com/storage/docs/composite-objects) が合体させることで完成させます。
+
+![](/images/mini-system-architecture/distributed-cloud-tasks.png)
 
 ### レスポンスのダウンロード自体に時間がかかる
 
