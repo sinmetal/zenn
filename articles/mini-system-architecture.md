@@ -97,7 +97,7 @@ Concurrentlyやマシンスペックなどを調整することができます�
 分割する方法も色々ありますが、Cloud TasksやCloud Pub/Subにタスクを分割して入れて、発火するのが楽です。
 例えば1年分の売上データのCSVを作りたい時にCloud Tasksに1月担当のタスク、2月担当のタスク・・・という感じで入れていきます。
 そうすれば、12分割されて実行できます。
-できあがった12このCSVを [Composite objects](https://cloud.google.com/storage/docs/composite-objects) が合体させることで完成させます。
+できあがった12個のCSVを [Composite objects](https://cloud.google.com/storage/docs/composite-objects) を使い、合体させることで完成させます。
 
 ![](/images/mini-system-architecture/distributed-cloud-tasks.png)
 
