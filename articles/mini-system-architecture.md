@@ -6,6 +6,8 @@ topics: ["gcp"]
 published: true
 ---
 
+[Google Cloud Champion Innovators Advent Calendar 2023](https://adventar.org/calendars/9217) の12日目の記事です。
+
 筆者が小さなWebアプリケーションをGoogle Cloudで構築する場合の構成をいくつか紹介します。
 今やGoogle Cloudには多くのプロダクトがあり、同じ要件を満たすにも様々な構成があります。
 筆者の場合は少人数で開発運用することが多く、予算も少な目なことが多いので、フルマネージドサービスやサーバーレスと呼ばれるものを使い、基本運用はプラットフォーム任せで何もしてないみたいな感じのことが多いです。
