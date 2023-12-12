@@ -3,7 +3,7 @@ title: "小さなWebアプリケーションをGoogle Cloudで作る場合の構
 emoji: "🐁"
 type: "tech" # tech: 技術記事 / idea: アイデア
 topics: ["gcp"]
-published: false
+published: true
 ---
 
 筆者が小さなWebアプリケーションをGoogle Cloudで構築する場合の構成をいくつか紹介します。
@@ -104,3 +104,29 @@ Concurrentlyやマシンスペックなどを調整することができます�
 ### レスポンスのダウンロード自体に時間がかかる
 
 CSVやPDFなどレスポンス自体のサイズが大きい場合は、Cloud Storageの [SignedURL](https://cloud.google.com/storage/docs/access-control/signed-urls) を使ってCloud Storageから直接ダウンロードしてもらうのが良いです。
+
+## おまけ
+
+自分の周りで動いてるシステムたちの構成
+
+### [GCPUG](https://gcpug.jp)
+
+App Engine Standard Environmentで動いてる1枚だけのWebページ。
+Firebase Hostingで良いのだけど、昔からの名残。
+
+### [技術書典](https://techbookfest.org/)
+
+Fastlyが前にいて、後ろにCloud Runがいる構成。
+Cloud RunはGraphQL用、Web Front用などいくつかある。
+
+### 社内限定Q&Aアプリケーション
+
+メルカリ社内で使っているQ&Aアプリケーション。
+Firebase HostingとCloud Firestoreで動いている。
+Cloud Firestore Security Rulesによって、社員かどうかを判別している。
+
+### 社内限定Documentアプリケーション
+
+メルカリ社内で使っているDocument共有アプリケーション。
+[MKDocs](https://www.mkdocs.org/) で生成したHTMLをCloud Runから配信している。
+Application Load Balancerが前にいてIdentity-Aware Proxyによって、社員かどうかを判別している。
