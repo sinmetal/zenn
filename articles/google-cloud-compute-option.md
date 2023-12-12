@@ -1,5 +1,5 @@
 ---
-title: "どこで実行すべきか？Google Cloud Compute Option"
+title: "どこで実行すべきか？Google Cloud Compute Option (アプリケーション編)"
 emoji: "🐕‍🦺"
 type: "tech" # tech: 技術記事 / idea: アイデア
 topics: ["gcp"]
@@ -54,6 +54,8 @@ Instanceは入れ替わることがあります。
 [Elasticsearchを動かしてる根性入った人](https://zenn.dev/tellernovel_inc/articles/3b38a1a17128c6) もいますし、 [技術書典](https://techbookfest.org/) ではSolrを動かしていて、Containerの起動に1min以上かかっています。
 まぁ、遅いだけと言えば、遅いだけなので、どのぐらい許容できるかです。
 
+筆者はContainerの起動速度をとても気にする人間なので、シングルバイナリが作れて小さなContainer Imageを作れる [Go](https://go.dev/) を使っています。
+
 ### Cloud Runに向かないやつは何で動かしてる？
 
 #### [GKE Autopilot](https://cloud.google.com/kubernetes-engine/docs/concepts/autopilot-overview)
@@ -74,4 +76,7 @@ Cloud StorageやFirestoreなど、Cluster以外のリソースは各Projectに�
 かなり大きなマシンスペックが必要なもの、MinecraftやARKのようにインストールしてDiskにセーブデータを持つようなものはCompute Engineを使っています。
 筆者がCompute Engineを使う場合、Instanceを起動したままにすることは少なく、Cloud Runから起動停止を行います。
 
-筆者は普段Web Serverは [Go](https://go.dev/) で書くので、シングルバイナリで小さなContainer Imageで動作させることができ、高速なSpinupに実現できるので、Cloud Runはちょうどよいです。
+## おわりに
+
+アプリケーションを動かすプロダクト選択の筆者の趣味で話でした。
+バッチジョブを動かす場合は更に多くの選択が出てくるので、やる気が出れば、書いてみようと思います。
