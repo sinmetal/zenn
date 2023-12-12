@@ -130,3 +130,4 @@ Cloud Firestore Security Rulesによって、社員かどうかを判別して�
 メルカリ社内で使っているDocument共有アプリケーション。
 [MKDocs](https://www.mkdocs.org/) で生成したHTMLをCloud Runから配信している。
 Application Load Balancerが前にいてIdentity-Aware Proxyによって、社員かどうかを判別している。
+細かい構成は [Cloud Run with IAP / 任意の環境のURLを作る](https://zenn.dev/sinmetal/articles/cloudrun-pr-deploy) に書いた通り。
