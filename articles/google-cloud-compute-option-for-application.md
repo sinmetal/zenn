@@ -3,7 +3,7 @@ title: "どこで実行すべきか？Google Cloud Compute Option (アプリケ�
 emoji: "🐕‍🦺"
 type: "tech" # tech: 技術記事 / idea: アイデア
 topics: ["gcp"]
-published: false
+published: true
 ---
 
 昔と比べるとGoogle Cloudは多くのプロダクトがあり、同じことをしようとしても選択肢が多くあります。
