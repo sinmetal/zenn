@@ -53,33 +53,37 @@ Instanceは入れ替わることがあります。
 ただ、Min Instanceを指定することで軽減はできるので、許容範囲内に収まるのであれば、なんとかなります。
 [ZennもContainerの起動にそこそこ時間がかかるので、Min Instanceが無い時はCloud Runで動かすのを断念したようですが、Min Instanceを設定することで許容範囲内になった](https://zenn.dev/team_zenn/articles/migrate-appengine-to-cloudrun) ようです。
 [Elasticsearchを動かしてる根性入った人](https://zenn.dev/tellernovel_inc/articles/3b38a1a17128c6) もいますし、 [技術書典](https://techbookfest.org/) ではSolrを動かしていて、Containerの起動に1min以上かかっています。
-まぁ、遅いだけと言えば、遅いだけなので、どのぐらい許容できるかです。
+まぁ、Instanceの起動に当たった1リクエストが遅いだけなので、どのぐらい許容できるかです。
+キャッシュを活用したり、クライアント側でタイムアウトを入れておいて、リトライするような形になっていれば、そんなに気になりません。
 
 筆者はContainerの起動速度をとても気にする人間なので、シングルバイナリが作れて小さなContainer Imageを作れる [Go](https://go.dev/) を使っています。
+Webアプリケーション用フレームワークを使う場合、起動速度も気にします。
 
 ### Cloud Runに向かないやつは何で動かしてる？
 
 #### [GKE Autopilot](https://cloud.google.com/kubernetes-engine/docs/concepts/autopilot-overview)
 
-任意の数のInstanceを動かしたい、アプリケーションを動かし続けたい、状態をメモリ内で保持したい場合時は [GKE Autopilot](https://cloud.google.com/kubernetes-engine/docs/concepts/autopilot-overview) を使っています。
+任意の数のInstanceを動かしたい、アプリケーションを動かし続けたい、状態をメモリ内で保持したい場合などは [GKE Autopilot](https://cloud.google.com/kubernetes-engine/docs/concepts/autopilot-overview) を使っています。
 GKE Autopilotを使えば、Cloud Runと同じようにContainer ImageをDeployするだけで動かせます。
-インターネットからリクエストを受け取るとなると少々大変ですが、中から外にリクエストを送る用途であれば、割と楽です。
-GEK Autopilotの場合、 [Workload Identity](https://cloud.google.com/kubernetes-engine/docs/concepts/workload-identity) が必須なので、最初にこの設定をするのがちょっと手こずるかもしれません。
+インターネットからリクエストを受け取るとなるとLBを作ったりドメインを当てたりと少々大変ですが、中から外にリクエストを送る用途であれば、割と楽です。
+GKE Autopilotは [Workload Identity](https://cloud.google.com/kubernetes-engine/docs/concepts/workload-identity) が必須なので、最初にこの設定をするのがちょっと手こずるかもしれません。
 慣れてしまえば、なんとかなります。
 
 GKEは [Clusterごとに管理手数料](https://cloud.google.com/kubernetes-engine/pricing?hl=ja#cluster_management_fee_and_free_tier) がかかります。
-Billing Accountに対して1 Clusterは無料なので、Clusterをたくさん作るより1つのClusterにある程度まとめた方が安くなります。
-そのため筆者はGEK Cluster用のProjectを作って、そこにClusterはまとめています。
+Billing Accountに対して1 Clusterは無料なので、Clusterをたくさん作るより1つのClusterにまとめた方が安くなります。
+そのため筆者はGKE Cluster用のProjectを作って、そこにClusterを置いています。
 Cloud StorageやFirestoreなど、Cluster以外のリソースは各Projectに置いてます。
 
 #### Compute Engine
 
-かなり大きなマシンスペックが必要なもの、MinecraftやARKのようにインストールしてDiskにセーブデータを持つようなものはCompute Engineを使っています。
+かなり大きなマシンスペックが必要なもの、 [Minecraft](https://www.minecraft.net/ja-jp) や [ARK](https://store.steampowered.com/app/2399830/ARK_Survival_Ascended/) のようにインストールしてDiskにセーブデータを持つようなものはCompute Engineを使っています。
 Diskのスナップショットを取れるので、バックアップを作ったり、複製を作ったりするのが楽です。
-筆者がCompute Engineを使う場合、Instanceを起動したままにすることは少なく、Cloud Runから起動停止を行います。
+
+筆者がCompute Engineを使う場合、Instanceを起動したままにすることは少なく、Cloud Runから必要に応じて起動停止を行います。
 [Compute Engine API](https://cloud.google.com/compute/docs/reference/rest/v1) でInstanceの作成も削除も、起動も停止もすべてできるので、サーバレスプロダクトからよく操作しています。
+どのようなことをしているのかは [ARK: Survival Ascended Server構築記 その1 Compute EngineでServerを動かす](https://zenn.dev/sinmetal/articles/ark-server-operation1-compute-engine) に書いてます。
 
 ## おわりに
 
-アプリケーションを動かすプロダクト選択の筆者の趣味で話でした。
+アプリケーションを動かすプロダクト選択の筆者の趣味の話でした。
 ジョブを動かす場合は更に多くの選択が出てくるので、やる気が出れば、書いてみようと思います。
