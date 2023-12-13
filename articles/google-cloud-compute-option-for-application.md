@@ -6,6 +6,8 @@ topics: ["gcp"]
 published: true
 ---
 
+[Google Cloud Champion Innovators Advent Calendar 2023](https://adventar.org/calendars/9217) の13日目の記事です。
+
 昔と比べるとGoogle Cloudは多くのプロダクトがあり、同じことをしようとしても選択肢が多くあります。
 昔からずっとやっていって、各プロダクトがリリースされていたのを見ていた人ならともかく、これから始める人はどれから触るか悩むと思います。
 公式でもよくこの話やっています。
