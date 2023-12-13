@@ -42,6 +42,7 @@ Containerになってれば、とりあえずDeployできるCloud Runですが�
 #### アプリケーションを動かし続けたい
 
 ChatBotでコネクションを張りっぱなしにしたいなど、アプリケーションを動作させ続けたい場合はCloud Runは向きません。
+アプリケーションとしてはステートレスで、HTTP Request毎に処理をするというのが基本的な思想です。
 Min Instanceを指定した場合でも、その数のInstanceが存在するように制御してくれるだけで、同じInstanceが動作し続けるわけではありません。
 Instanceは入れ替わることがあります。
 
@@ -64,7 +65,7 @@ Instanceは入れ替わることがあります。
 GKE Autopilotを使えば、Cloud Runと同じようにContainer ImageをDeployするだけで動かせます。
 インターネットからリクエストを受け取るとなると少々大変ですが、中から外にリクエストを送る用途であれば、割と楽です。
 GEK Autopilotの場合、 [Workload Identity](https://cloud.google.com/kubernetes-engine/docs/concepts/workload-identity) が必須なので、最初にこの設定をするのがちょっと手こずるかもしれません。
-慣れてしまえば、まぁ、なんとかなります。
+慣れてしまえば、なんとかなります。
 
 GKEは [Clusterごとに管理手数料](https://cloud.google.com/kubernetes-engine/pricing?hl=ja#cluster_management_fee_and_free_tier) がかかります。
 Billing Accountに対して1 Clusterは無料なので、Clusterをたくさん作るより1つのClusterにある程度まとめた方が安くなります。
@@ -74,9 +75,11 @@ Cloud StorageやFirestoreなど、Cluster以外のリソースは各Projectに�
 #### Compute Engine
 
 かなり大きなマシンスペックが必要なもの、MinecraftやARKのようにインストールしてDiskにセーブデータを持つようなものはCompute Engineを使っています。
+Diskのスナップショットを取れるので、バックアップを作ったり、複製を作ったりするのが楽です。
 筆者がCompute Engineを使う場合、Instanceを起動したままにすることは少なく、Cloud Runから起動停止を行います。
+[Compute Engine API](https://cloud.google.com/compute/docs/reference/rest/v1) でInstanceの作成も削除も、起動も停止もすべてできるので、サーバレスプロダクトからよく操作しています。
 
 ## おわりに
 
 アプリケーションを動かすプロダクト選択の筆者の趣味で話でした。
-バッチジョブを動かす場合は更に多くの選択が出てくるので、やる気が出れば、書いてみようと思います。
+ジョブを動かす場合は更に多くの選択が出てくるので、やる気が出れば、書いてみようと思います。
