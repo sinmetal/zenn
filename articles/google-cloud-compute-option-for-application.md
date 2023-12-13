@@ -20,7 +20,7 @@ published: false
 筆者のスキルセットとしてはインフラ構築とかは得意ではないので、フルマネージドサービスを使うことが多いです。
 [sinmetalはなぜGoogle Cloudが好きなのか？](https://zenn.dev/google_cloud_jp/articles/google-cloud-love) を読むと好みが分かります。
 
-## どこで実行すべきか？
+## とりあえずCloud Run
 
 HTTPリクエストを処理するアプリケーションを作る時の第一の選択肢は [Cloud Run](https://cloud.google.com/run/docs/overview/what-is-cloud-run) です。
 Cloud Runの良いところはContainer Imageを用意して、Deployするだけで、他に考えることが少ないのが楽です。
@@ -28,25 +28,25 @@ Cloud Runの良いところはContainer Imageを用意して、Deployするだ�
 [認証機能もあるので](https://cloud.google.com/run/docs/authenticating/overview) 必要に応じて、設定できます。
 HTTPSでアクセスできるURLも発行してくれるので、ちょっとしたアプリケーションを作るのはとても簡単です。
 
-### Cloud Runに向かない要件
+## Cloud Runに向かない要件
 
 Containerになってれば、とりあえずDeployできるCloud Runですが、向いてないこともあります。
 公式ドキュメントにも [アプリケーションが向いてるかどうか](https://cloud.google.com/run/docs/fit-for-run) を考えるページがあります。
 
-#### 任意の数のInstanceを動かしたい
+### 任意の数のInstanceを動かしたい
 
 1台だけ動作させたいといったことは向きません。
 [Min Instance](https://cloud.google.com/run/docs/configuring/min-instances) , [Max Instance](https://cloud.google.com/run/docs/configuring/max-instances) という設定がありますが、これを両方1にしたからと言って、必ず1台だけ立ち上がっている状態になるわけではありません。
 そのため、1つしかアプリケーションは同時に存在しないはずといった前提で書いているアプリケーションを動作させる環境としてはCloud Runは向きません。
 
-#### アプリケーションを動かし続けたい
+### アプリケーションを動かし続けたい
 
 ChatBotでコネクションを張りっぱなしにしたいなど、アプリケーションを動作させ続けたい場合はCloud Runは向きません。
 アプリケーションとしてはステートレスで、HTTP Request毎に処理をするというのが基本的な思想です。
 Min Instanceを指定した場合でも、その数のInstanceが存在するように制御してくれるだけで、同じInstanceが動作し続けるわけではありません。
 Instanceは入れ替わることがあります。
 
-#### Containerの起動に時間がかかる
+### Containerの起動に時間がかかる
 
 起動に時間がかかるフレームワークを使っているなど、Container起動してから、HTTPリクエストを処理できるようになるまで時間がかかるものは向きません。
 処理できるInstanceがいない場合、待つことになるからです。
@@ -59,9 +59,9 @@ Instanceは入れ替わることがあります。
 筆者はContainerの起動速度をとても気にする人間なので、シングルバイナリが作れて小さなContainer Imageを作れる [Go](https://go.dev/) を使っています。
 Webアプリケーション用フレームワークを使う場合、起動速度も気にします。
 
-### Cloud Runに向かないやつは何で動かしてる？
+## Cloud Runに向かないやつは何で動かしてる？
 
-#### [GKE Autopilot](https://cloud.google.com/kubernetes-engine/docs/concepts/autopilot-overview)
+### [GKE Autopilot](https://cloud.google.com/kubernetes-engine/docs/concepts/autopilot-overview)
 
 任意の数のInstanceを動かしたい、アプリケーションを動かし続けたい、状態をメモリ内で保持したい場合などは [GKE Autopilot](https://cloud.google.com/kubernetes-engine/docs/concepts/autopilot-overview) を使っています。
 GKE Autopilotを使えば、Cloud Runと同じようにContainer ImageをDeployするだけで動かせます。
@@ -74,7 +74,7 @@ Billing Accountに対して1 Clusterは無料なので、Clusterをたくさん�
 そのため筆者はGKE Cluster用のProjectを作って、そこにClusterを置いています。
 Cloud StorageやFirestoreなど、Cluster以外のリソースは各Projectに置いてます。
 
-#### Compute Engine
+### Compute Engine
 
 かなり大きなマシンスペックが必要なもの、 [Minecraft](https://www.minecraft.net/ja-jp) や [ARK](https://store.steampowered.com/app/2399830/ARK_Survival_Ascended/) のようにインストールしてDiskにセーブデータを持つようなものはCompute Engineを使っています。
 Diskのスナップショットを取れるので、バックアップを作ったり、複製を作ったりするのが楽です。
