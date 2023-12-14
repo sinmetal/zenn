@@ -149,15 +149,16 @@ App Engine Standardの1st gen, 2nd genとCloud Functions, Cloud Runの1st gen, 2
 App Engine Standardは2nd genが主にgVisorですが、Cloud FunctionsとCloud Runは1st genがgVisorです。([Cloud Run](https://cloud.google.com/run/docs/container-contract), [Cloud Functions](https://cloud.google.com/functions/docs/securing?hl=ja#isolation_and_sandboxing))
 リリース時期などを考えるとApp Engine Standard 2nd genと似た仕組みで動いていたのではないかと思います。
 gVisorの場合、spinupは早くて良いのですが、Linuxと完全な互換性はないため、なんでも動くわけでは有りません。([gVisor syscall 互換性リファレンス](https://gvisor.dev/docs/user_guide/compatibility/linux/amd64/))
+Cloud Functions gen2はCloud Run gen1の上で動くようになったので仕組みが統一された形になりました。
+
 Cloud Run gen2はgVisorがなくなり、Linuxとの完全な互換性を持っています。
 spinupが少し遅くなったのと必要なマシンスペックが上がっていますが、起動してしまえば早いといった感じになっています。
-Cloud Functions gen2はCloud Run gen2の上で動いているので、同じものです。
 max concurrent requestも2以上を指定できるようになっているので、DBに接続する必要があるFunctionでRequestが多い場合などはgen2を使った方が効率よく処理できるようになりました。
 
 |  | 1st gen | 2nd gen |
 | ---- | ---- | ---- |
 | App Engine Standard | 謎 | gVisor |
-| Cloud Functions | gVisor | VM |
+| Cloud Functions | gVisor | gVisor |
 | Cloud Run | gVisor | VM |
 
 長時間処理を行うための [Cloud Run Jobs](https://cloud.google.com/run/docs/execute/jobs) が登場したりと、まだ、Serverlessプロダクトには多くのことが求められています。
