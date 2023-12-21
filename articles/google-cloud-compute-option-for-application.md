@@ -15,7 +15,7 @@ published: true
 * 2020年: [Where should I run my stuff? Choosing compute options](https://www.youtube.com/watch?v=q_5AgiI7KFQ)
 * 2021年: [どこで実行すべきか。Google Cloud のコンピューティング オプションの選択](https://cloud.google.com/blog/ja/topics/developers-practitioners/where-should-i-run-my-stuff-choosing-google-cloud-compute-option)
 * 2022年: [アプリケーションはどこで動かすべきか 2022 春](https://www.youtube.com/watch?v=BxCIi21irMA)
-* 2023年: Comming Soon
+* 2023年: [アプリケーションをどこで動かすべきか](https://cloudonair.withgoogle.com/events/next-tokyo/watch?talk=d1-app-03)
 
 筆者はやりたいこととスキルセットがクロスすることで最適なものが変わると思っているので、最終的には趣味かなと思っています。
 ということで、この記事では筆者が選ぶ時の判断基準について書いていきます。
