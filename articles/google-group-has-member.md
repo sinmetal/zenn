@@ -15,27 +15,25 @@ Google Cloudを使っていると時折Google Groupにメンバーが存在す�
 
 ## [Cloud Identity Groups API](https://cloud.google.com/identity/docs/how-to/setup)
 
-Google Workspace Enterprise Standard以上 or Cloud Identity Premiumに入ってないと使えないAPIです。
-そのため、おそらく無料のGoogle Groupには使えない(確かめてない)と思われます。
+Google Workspace Enterprise Standard以上 or Cloud Identity Premiumのみで使えるAPIです。
+そのため、おそらく無料のGoogle Groupには使えない(筆者は確かめてない)と思われます。
 ビジネス用途でGoogle Workspaceを使っている場合はEnterprise Standard以上であることがほとんどだと思うので、さして問題にはならないと思います。
-なんなら、私個人で1人で使ってるGoogle Workspace Enterprise Standardです。
 
 [groups.memberships.checkTransitiveMembership](https://cloud.google.com/identity/docs/reference/rest/v1/groups.memberships/checkTransitiveMembership) を使うことで任意のGroupにMemberが存在するかをチェックすることができます。
-Groupが入れ子になっていても、全部見て、結果を返してくれます。
+Groupが入れ子になっていても、全部見て、結果を返してくれる便利なAPIです。
 
 ### 権限設定
 
 権限としては確認したいGoogle Group、そしてそのGroupの中に入っているGroupに参加する必要があります。
 Service AccountでAPIを実行する場合はService Accountを参加させます。
-メンバーであればよいので、オーナーとして参加する必要はありません。
+Groupのメンバーであればよいので、オーナーとして参加する必要はありません。
 この時、確認したいGoogle Groupの中のGroupの権限を持っていない場合は、権限があるところだけ見て、結果を返してくれます。
 見れる範囲に探しているAccountが見つかれば、 `200 OK hasMembership:true` が返ってきます。
 見れる範囲では見つからず、権限が無く、探せない入れ子になっているGoogle Groupがある場合は、403が返ってきて、detailには見れなかったGoogle Groupがあり、まだ探せる範囲があることを示されます。
 
-### 試してみる
+### groups.memberships.checkTransitiveMembershipを試す前の準備
 
-権限の設定ができたら、APIを実行していきます。
-ただ、parentに指定する値がちょっと特殊です。
+groups.memberships.checkTransitiveMembershipを試してみる時にパラメーターとしてparentに指定する値がちょっと特殊です。
 探索したいGoogle Groupを指定するのですが、Google Groupのメールアドレスを指定するのではなく、Google Groupが中で使っているKeyを指定します。
 このKeyはGoogle GroupのWeb UIでは確認できないので、別途APIで確認する必要があります。
 
@@ -55,3 +53,11 @@ google.searchでGoogle Groupのメールアドレスを検索条件に入れよ�
 [Client Libraryのコメント](https://github.com/googleapis/google-api-go-client/blob/af6aa38b90461f3a5d1bfe13a86aa788f4b08da1/cloudidentity/v1/cloudidentity-gen.go#L9020-L9026) を見ると、 `member_key_id` と書いてあるので、こっちが正しいです。
 これはなかなかのトラップです。
 ドキュメント上はキャメルケースだけど、本当はスネークケースを指定するという事象、昔もどこかで遭遇した気がするので、疑ってかかった方が良いポイントなのかもしれません。
+
+### groups.memberships.checkTransitiveMembershipを試す
+
+[groups.memberships.checkTransitiveMembership](https://cloud.google.com/identity/docs/reference/rest/v1/groups.memberships/checkTransitiveMembership) を実行するための値は揃いました。
+parentには [groups.search](https://cloud.google.com/identity/docs/reference/rest/v1/groups/search) or [groups.list](https://cloud.google.com/identity/docs/reference/rest/v1/groups/list) で分かったGroupのKeyを指定します。
+`groups/XXXXXXXXX` のような値です。
+queryには `member_key_id == '{メールアドレス}'` を指定します。
+これでResponseが得られます。
