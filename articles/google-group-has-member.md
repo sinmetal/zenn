@@ -23,12 +23,16 @@ Google Workspace Enterprise Standard以上 or Cloud Identity Premiumに入って
 [groups.memberships.checkTransitiveMembership](https://cloud.google.com/identity/docs/reference/rest/v1/groups.memberships/checkTransitiveMembership) を使うことで任意のGroupにMemberが存在するかをチェックすることができます。
 Groupが入れ子になっていても、全部見て、結果を返してくれます。
 
+### 権限設定
+
 権限としては確認したいGoogle Group、そしてそのGroupの中に入っているGroupに参加する必要があります。
 Service AccountでAPIを実行する場合はService Accountを参加させます。
 メンバーであればよいので、オーナーとして参加する必要はありません。
 この時、確認したいGoogle Groupの中のGroupの権限を持っていない場合は、権限があるところだけ見て、結果を返してくれます。
 見れる範囲に探しているAccountが見つかれば、 `200 OK hasMembership:true` が返ってきます。
 見れる範囲では見つからず、権限が無く、探せない入れ子になっているGoogle Groupがある場合は、403が返ってきて、detailには見れなかったGoogle Groupがあり、まだ探せる範囲があることを示されます。
+
+### 試してみる
 
 権限の設定ができたら、APIを実行していきます。
 ただ、parentに指定する値がちょっと特殊です。
@@ -41,6 +45,8 @@ Service AccountでAPIを実行する場合はService Accountを参加させま�
 WorkspaceのCustomerIDは管理画面で見ることができます。
 
 ![Google Workspace Customer ID](/images/google-group-has-member/google-workspace-customer-id.png)
+
+#### query指定時に注意すること
 
 google.searchでGoogle Groupのメールアドレスを検索条件に入れようとした時に一つ注意することがあります。
 `parent == 'customers/XXXXXXX' && groupKey.contains('dev')` のようにqueryに指定して実行した場合、 `400 INVALID_ARGUMENT Request contains an invalid argument.` と返ってきます。
