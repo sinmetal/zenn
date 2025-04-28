@@ -71,11 +71,6 @@ App Engine for Go はスピンアップタイムが爆速なので、ここは A
 App Engine は最新の Version から 1つか２つぐらい遅れるが、幸い Go は後方互換を大事にする文化なので、むちゃくちゃ困ってはいない。
 Cloud Run だと コマンドラインツール で提供されているものも動かせることの方が嬉しいかもしれない。
 
-### 認証
-
-[Identity Aware Proxy](https://cloud.google.com/iap) を使う場合、Cloud Runは [Serverless NEG](https://cloud.google.com/load-balancing/docs/negs/serverless-neg-concepts?hl=en) が必要となるため、完全無料ではできない。
-完全無料を目指していない場合は、App EngineとCloud Runでどちらを選択するかに影響するような差はない。
-
 ### Static Contents
 
 App Engine には Static Contents Server があるので、html, js などを配信するのはとても簡単だけど、Cloud Run にはそういった機能はないので、何かしら考えてやる必要がある。
