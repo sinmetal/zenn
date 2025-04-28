@@ -115,18 +115,18 @@ Cloud Run 自体の Deadline は 60min だが、Cloud Run に Request を送る�
 
 App Engine と Cloud Run をやりたいことに合わせてMixして使うのも結構強力だ。
 それができる機能として [Serverless NEG](https://cloud.google.com/load-balancing/docs/negs/serverless-neg-concepts) がある。
-Serverless NEG はざっくり言うと [External HTTP(S) Load Balancing](https://cloud.google.com/load-balancing/docs/https?hl=en) の後ろに App Engine, Cloud Run, Cloud Functions を持ってこれるサービス。
+Serverless NEG はざっくり言うと [External Application Load Balancing](https://cloud.google.com/load-balancing/docs/https?hl=en) の後ろに App Engine, Cloud Run, Cloud Functions を持ってこれるサービス。
 Google Cloud Customer Engineer の Seiji Ariga さんが [噛み砕いた記事](https://medium.com/google-cloud-jp/serverless-neg-%E3%81%A7%E3%82%B7%E3%82%B9%E3%83%86%E3%83%A0%E9%96%8B%E7%99%BA%E3%82%92%E3%82%88%E3%82%8A%E6%9F%94%E8%BB%9F%E3%81%AB-4f9cebd2780f) を書いてくれている。
 Path ごとに向き先を設定できるので、 `/api/*` は App Engine `/image/upload` はマシンスペックを大きくした Cloud Run に送ることができる。
 
-更に External HTTP(S) Load Balancing が前にいれば、 [Cloud Armor](https://cloud.google.com/armor) が使えたり、Tokyo Region の [App Engine, Cloud Run に Custom Domain を割り当てた時に遅くなる問題](https://cloud.google.com/appengine/docs/standard/go/mapping-custom-domains?hl=en) が解決されるなど良いことが多い。
+更に External Application Load Balancing が前にいれば、 [Cloud Armor](https://cloud.google.com/armor) が使えたり、Tokyo Region の [App Engine, Cloud Run に Custom Domain を割り当てた時に遅くなる問題](https://cloud.google.com/appengine/docs/standard/go/mapping-custom-domains?hl=en) が解決されるなど良いことが多い。
 
 Severless NEGを使う場合、App EngineやCloud Runをそのまま使うのに比べて [制限事項](https://cloud.google.com/load-balancing/docs/negs/serverless-neg-concepts?hl=en#limitations) があるので、一通り確認しておいた方がよい。
 1 Projectでのシンプルな構成であれば問題なるものは少ないと思うが、複雑なことをやろうとしている場合、制限に引っかかるものがあるかもしれない。
 
 Cloud Tasks, Cloud Pub/SubなどからのRequestをどこに送るのか？というのも少し気にする必要がある。
-自分はHTTP LB経由ではなく直接App EngineやCloud Runに送ることが多い。
-HTTP LBを経由する必要性をあまり感じないからだ。
+自分はLB経由ではなく直接App EngineやCloud Runに送ることが多い。
+LBを経由する必要性をあまり感じないからだ。
 
 # 余談
 
